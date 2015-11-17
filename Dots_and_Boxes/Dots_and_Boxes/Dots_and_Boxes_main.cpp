@@ -655,7 +655,7 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    //* rem switch
+    /* rem switch
      grid.getTestInput();
      /*/
     grid.getInput();
