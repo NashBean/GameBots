@@ -9,14 +9,11 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 2;
-const int DaB_MINOR_VERSION = 6;
-
-#include <iostream>
-#include <vector>
+const int DaB_MINOR_VERSION = 7;
 
 #define BaR_SIZE 5
 
-enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16};
+enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16,bv_path=32};
 enum Box_Direct {bd_north,bd_east,bd_south,bd_west};
 
 struct Position 
@@ -64,6 +61,14 @@ struct BaR_Box
     void calc()
     {
         calcLineCount();
+        if (lcount == 4) 
+        {
+            val |= bv_taken;
+        }
+        else if(lcount == 2) 
+        {
+            val |= bv_path;
+        }
     };
     
     bool northOpen()
@@ -82,8 +87,6 @@ struct BaR_Box
     {
         return !(val & bv_left);
     };
-    
-    
 };
 
 
@@ -138,7 +141,7 @@ struct BaR_Grid
         int r,c;
         for (r=0; r<BaR_SIZE; ++r) 
             for (c=0; c<BaR_SIZE; ++c) 
-                box[r][c] = 3;
+                box[r][c] = (bv_top | bv_bottem);
         player = 1;
     };
 	void zero()
@@ -244,7 +247,7 @@ struct BaR_Boxes
                 	//{
                     tbox.row=r; tbox.col=c;
                     tbox.val=grid.box[r][c];
-                    tbox.calcLineCount();
+                    tbox.calc();
                     box.push_back(tbox);
                 	//}
                 }
@@ -625,7 +628,7 @@ struct BaR_Logic
         else
             getBestMoveBox(grid, tbox);
         
-        if(!firstmoveisset)
+        if(!firstmoveisset || moves.box.size() != 25)
         {
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
@@ -652,7 +655,7 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    /* rem switch
+    //* rem switch
      grid.getTestInput();
      /*/
     grid.getInput();
