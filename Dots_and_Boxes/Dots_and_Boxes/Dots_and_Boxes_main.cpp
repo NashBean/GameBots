@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 2;
-const int DaB_MINOR_VERSION = 7;
+const int DaB_MINOR_VERSION = 9;
 
 #define BaR_SIZE 5
 
@@ -176,14 +176,14 @@ struct BaR_Boxes
     
     bool contains(BaR_Box& bx)
     {
-        for(int i=box.size(); i>0; --i) 
+        for(int i=box.size()-1; i>0; --i) 
             if (box[i].row == bx.row && box[i].col == bx.col) return true; 
         return false;
     };
     
     bool contains(int r, int c)
     {
-        for(int i=box.size(); i>0; --i) 
+        for(int i=box.size()-1; i>0; --i) 
             if (box[i].row == r && box[i].col == c) return true; 
         return false;
     };
@@ -546,7 +546,7 @@ struct BaR_Logic
         }
         c = arun[0].boxCount();
         flag = 0;
-        for(int i=0; i<arun.size(); ++i) 
+        for(int i=1; i<arun.size(); ++i) 
             if(arun[i].boxCount() < c)
             {c=arun[i].boxCount(); flag = i;}
         b=arun[flag].box[0];
@@ -649,7 +649,6 @@ private:
     next_move firstMove;
 };
 
-
 int main()
 {
     BaR_Grid grid = BaR_Grid();
@@ -669,3 +668,4 @@ int main()
 	
     return 0;
 }
+
