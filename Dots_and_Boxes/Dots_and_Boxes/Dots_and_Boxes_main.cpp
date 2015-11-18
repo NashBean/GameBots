@@ -8,24 +8,14 @@
 #include <iostream>
 #include <vector>
 
-const int DaB_MAJOR_VERSION = 2;
-const int DaB_MINOR_VERSION = 9;
+const int DaB_MAJOR_VERSION = 3;
+const int DaB_MINOR_VERSION = 0;
 
 #define BaR_SIZE 5
 
 enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16,bv_path=32};
 enum Box_Direct {bd_north,bd_east,bd_south,bd_west};
 
-struct Position 
-{
-    int x, y;
-    Position(){x=y=0;};
-    Position(int ax, int ay){x=ax;y=ay;};
-    Position(Position& a){x=a.x;y=a.y;};
-    ~Position(){};
-	void set(int px, int py){x=px;y=py;}; 
-	void set(Position& a){x=a.x;y=a.y;}; 
-};
 
 struct BaR_Box 
 {
@@ -70,7 +60,18 @@ struct BaR_Box
             val |= bv_path;
         }
     };
-    
+    bool isOpen()
+    {
+        return  !(val & bv_taken);
+    };
+    bool isPath()
+    {
+        return  (val & bv_path);
+    };
+    bool isTaken()
+    {
+        return  (val & bv_taken);
+    };
     bool northOpen()
     {
         return  !(val & bv_top);
@@ -89,7 +90,6 @@ struct BaR_Box
     };
 };
 
-
 struct next_move 
 {
     int row, col, value;
@@ -102,10 +102,10 @@ struct next_move
         row = r;
         col = c;
     };
-    void setMovePos(Position& p)
+    void setMovePos(BaR_Box& p)
     {
-        row = p.x;
-        col = p.y;
+        row = p.row;
+        col = p.col;
     };
     void setMoveVal(int v)
     {
@@ -116,14 +116,8 @@ struct next_move
 struct BaR_Grid
 {
     int player;
-    //* rem switch
     int box[BaR_SIZE][BaR_SIZE];
 	BaR_Grid(){zero();};
-    /*/
-     std::vector<uint8_t,uint8_t> box;
-     BaR_Grid():box(BaR_SIZE,BaR_SIZE){};
-     ~BaR_Grid(){if(box.size()) box.clear();};
-     //*/
     void getInput()
     {   
         int r,c;
@@ -231,6 +225,20 @@ struct BaR_Boxes
         abx.calc();
         return true;
     };
+    void setGrid(BaR_Grid& grid)
+    {
+        if(box.size()) box.clear();
+        BaR_Box tbox = BaR_Box();
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+                { 	
+                    tbox.row=r; tbox.col=c;
+                    tbox.val=grid.box[r][c];
+                    tbox.calc();
+                    box.push_back(tbox);
+                }
+    };
+    
     
     void setMoves(BaR_Grid& grid)
     {
@@ -238,7 +246,7 @@ struct BaR_Boxes
         BaR_Box tbox = BaR_Box();
         for (int r=0; r<BaR_SIZE; ++r) 
             for (int c=0; c<BaR_SIZE; ++c) 
-                if (!(grid.box[r][c]  >= 0x0f )) 
+                if (!(grid.box[r][c]  >= 0x0f )) //0x0f = 00001111
                 {   // if input grid dose not have bv_taken set
                 	//if((grid.box[r][c] & bv_top) && (grid.box[r][c] & bv_bottem) 
                     //   && (grid.box[r][c] & bv_left) && (grid.box[r][c] & bv_right))
@@ -253,7 +261,7 @@ struct BaR_Boxes
                 }
     };
     
-    bool pathinDirect(BaR_Grid& grid,  BaR_Box& bx, int dir)
+    bool pathinDirection(BaR_Grid& grid,  BaR_Box& bx, int dir)
     {
         if (bx.lcount != 2) return false;//bd_north,bd_east,bd_south,bd_west
         BaR_Box tbox= BaR_Box();
@@ -317,33 +325,83 @@ struct BaR_Boxes
         if(w==0) return;
         
         for(int i=0; i<10; ++i) 
-            if (!pathinDirect(grid, tbox[0], direct[0]))   break;
+            if (!pathinDirection(grid, tbox[0], direct[0]))   break;
         //        while(pathinDirect(grid,  tbox[0], direct[0]));
         if(w>1)
             for(int i=0; i<10; ++i) 
-                if (!pathinDirect(grid, tbox[1], direct[1]))   break;
+                if (!pathinDirection(grid, tbox[1], direct[1]))   break;
         //            while(pathinDirect(grid, tbox[1], direct[1]));
         return;
     };
 };
 
+struct BaR_Dinamics 
+{
+    std::vector<BaR_Boxes> boxes; // box
+    int total_lines;
+    
+    BaR_Dinamics():boxes(0), total_lines(0){boxes.reserve(7);};
+    BaR_Dinamics(std::vector<BaR_Boxes>& v):boxes(v.size())
+    {   
+        for (size_t i=0; i<boxes.size(); ++i) 
+        {   boxes[i]=v[i];   }
+    };
+    ~BaR_Dinamics()
+    {
+        if(boxes.size()) boxes.clear();
+    };
+    void calc_total_lines()
+    {
+        total_lines=0;
+        for (int i=0; i<boxes[0].box.size(); ++i)
+        {
+            if (boxes[0].box[i].row == 0) 
+            {
+                if (boxes[0].box[i].val & bv_top) ++total_lines;
+            }
+            if (boxes[0].box[i].col == 0) 
+            {
+                if (boxes[0].box[i].val & bv_left) ++total_lines;
+            }
+            if (boxes[0].box[i].val & bv_right) ++total_lines;
+            if (boxes[0].box[i].val & bv_bottem) ++total_lines;
+        }    
+    };
+    void init_board(BaR_Grid& grid)
+    {
+        BaR_Boxes tempBoxes = BaR_Boxes();
+        
+        // index 0 = whole grid
+        tempBoxes.setGrid(grid);
+        boxes.push_back(tempBoxes);
+        
+        // index 1 = all open boxes
+        tempBoxes.setMoves(grid);
+        boxes.push_back(tempBoxes);
+        
+        calc_total_lines();
+        
+        // index 2 > will connected paths
+        //if(total_lines > 29)
+            //find paths
+            
+        
+        
+    };
+
+};
+
 struct BaR_Logic 
 {
-    std::vector<int> my_row;
-    std::vector<int> my_col;
-    std::vector<int> my_opt;
     BaR_Boxes moves;
     
-    BaR_Logic():my_row(0),my_col(0),my_opt(0),moves(),firstMove()
+    BaR_Logic():moves(),firstMove()
     {firstmoveisset=false;};
     //    BaR_Logic(std::vector<position>& vp):my_moves(0){my_moves.push_back(vp);};
     ~BaR_Logic()
-    {
-        if(my_row.size()) my_row.clear();
-        if(my_col.size()) my_col.clear();
-        if(my_opt.size()) my_opt.clear();
-    };
+    {};
     int getOptions(int v)
+   //* 
     {
         int result=0;
         if(v & bv_top) ++result;
@@ -351,166 +409,8 @@ struct BaR_Logic
         if(v & bv_bottem) ++result;
         if(v & bv_left) ++result;
         return result;
-    };
+    };//*/
     
-    void setMyMoves(BaR_Grid& grid)
-    {
-        Position p;
-        for (int r=0; r<BaR_SIZE; ++r) 
-            for (int c=0; c<BaR_SIZE; ++c) 
-                if (!(grid.box[r][c]  >= 0x0f)) //& bv_taken)) 
-                {
-                	if((grid.box[r][c] & bv_top) && (grid.box[r][c] & bv_bottem) 
-                       && (grid.box[r][c] & bv_left) && (grid.box[r][c] & bv_right))
-                	{p.x=r; p.y=c;}
-                	else
-                	{
-                        my_row.push_back(r);
-                        my_col.push_back(c);
-                        int temp = getOptions(grid.box[r][c]);
-                        my_opt.push_back(temp);
-                	}
-                    // p.set(r, c);
-                    // my_moves.push_back(p);
-                }
-    };
-    void setNextMove(BaR_Grid& grid, next_move& nm)
-    {
-        setMyMoves(grid);
-        
-        // set Move poition
-        if (my_row.size() == 0) {std::cout<< "noMove";return;}//Game Over
-        if (my_row.size() == 1) 
-        {
-            nm.setMovePos(my_row[0], my_col[0]);
-            //nm.setMovePos(my_moves[0]);
-        }
-        else
-        {
-        	int o;
-        	bool nopos = true;
-        	for(o=0; o<my_opt.size();++o)
-        		if(my_opt[o] == 3)
-                {
-            		nm.setMovePos(my_row[o], my_col[o]);
-            		nopos = false;
-            		o = my_opt.size();
-                }
-        	if(nopos)
-                for(o=0; o<my_opt.size();++o)
-                    if(my_opt[o] == 1)
-        			{
-                        nm.setMovePos(my_row[o], my_col[o]);
-                        nopos = false;
-                        o = my_opt.size();
-        			}
-        	if(nopos)
-        	{
-                for(o=0; o<my_opt.size();++o)
-                    if(my_opt[o] == 0)
-        			{
-                        nm.setMovePos(my_row[o], my_col[o]);
-                        nopos = false;
-                        o = my_opt.size();
-        			}
-        	}
-        	if(nopos) 	nm.setMovePos(my_row[0], my_col[0]);
-            
-        }
-        
-        // set Move Value
-        int temp=0;
-        bool nopos=true;
-        temp = grid.box[nm.row][nm.col];
-        
-        if(!(temp & bv_bottem))
-        {
-         	if(getOptions(grid.box[nm.row][nm.col]) == 3)
-        	{
-        		nm.value = 2;
-        		nopos=false;
-        	}
-       		else if(nm.row == BaR_SIZE-1)
-        	{
-                nm.value = 2;
-                nopos=false;
-        	}
-        	else if(getOptions(grid.box[nm.row+1][nm.col]) != 2) 
-        	{
-                nm.value = 2;
-                nopos=false;
-        	}
-        }
-        if(nopos)
-         	if(!(temp & bv_right))
-        	{
-        		if(getOptions(grid.box[nm.row][nm.col]) == 3)
-        		{
-        			nm.value = 1;
-        			nopos=false;
-        		}
-        		else if(nm.col == BaR_SIZE-1)
-        		{
-        			nm.value = 1;
-        			nopos=false;
-        		}
-        		else if(getOptions(grid.box[nm.row][nm.col+1]) != 2) 
-        		{
-        			nm.value = 1;
-        			nopos=false;
-        		}
-        	}
-        if(nopos)
-        	if(!(temp & bv_left))
-        	{
-        		if(getOptions(grid.box[nm.row][nm.col]) == 3)
-        		{
-        			nm.value = 3;
-        			nopos=false;
-        		}
-        		else if(nm.col == 0)
-        		{
-        			nm.value = 3;
-        			nopos=false;
-        		}
-        		else if(getOptions(grid.box[nm.row][nm.col-1]) != 2) 
-        		{
-        			nm.value = 3;
-        			nopos=false;
-        		}
-        	}
-        //if(temp & bv_top) 
-        if(nopos) 
-        	if(!(temp & bv_top))
-        	{
-        		if(getOptions(grid.box[nm.row][nm.col]) == 3)
-        		{
-        			nm.value = 0;
-        			nopos=false;
-        		}
-        		else if(nm.row == 0)
-        		{
-        			nm.value = 0;
-        			nopos=false;
-        		}
-        		else if(getOptions(grid.box[nm.row][nm.col-1]) != 2) 
-        		{
-        			nm.value = 0;
-        			nopos=false;
-        		}
-        	}
-        if(nopos) 
-        {
-            if(!(temp & bv_bottem))
-                nm.value = 2;
-       		else if(!(temp & bv_right))
-                nm.value = 1;
-        	else if(!(temp & bv_top))
-                nm.value = 0;
-         	else if(!(temp & bv_left))
-                nm.value = 3;
-        }
-    };   
     void getBestMoveBox(BaR_Grid& grid, BaR_Box& b)
     {
         int o;
@@ -635,6 +535,7 @@ struct BaR_Logic
         }
         
     };   
+    
     void setFirstMove(int r, int c, int d)
     {
     	// r == row c == col  d == Box_Direct
@@ -660,6 +561,7 @@ int main()
     grid.getInput();
     //*/
     // logic.setFirstMove(1,2,bd_east);
+    
     logic.setNextMove2(grid, nm);
     
     std::cout << nm.row << " ";
