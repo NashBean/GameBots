@@ -9,26 +9,26 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 0;
+const int DaB_MINOR_VERSION = 1;
 
 #define BaR_SIZE 5
 
 enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16,bv_path=32};
-enum Box_Direct {bd_north,bd_east,bd_south,bd_west};
+enum Box_Direct {bd_north,bd_east,bd_south,bd_west,bd_any};
 
 
 struct BaR_Box 
 {
     int row, col;//row, colom
-    int val, lcount, path;//value, line_count ,no_line_enum      
+    int val, lcount, pcount;//value, line_count ,no_line_enum      
     
-    BaR_Box():row(0),col(0),val(0),lcount(0),path(0){};
+    BaR_Box():row(0),col(0),val(0),lcount(0),pcount(0){};
     ~BaR_Box(){};
     BaR_Box& operator =(const BaR_Box& b)
     {
         row=b.row; col=b.col;
         val=b.val; lcount=b.lcount;
-        path=b.path;
+        pcount=b.pcount;
         return *this;
     };
     void setPos(int r, int c)
@@ -42,11 +42,15 @@ struct BaR_Box
     };
     void calcLineCount()
     {
-        lcount=0;
+        lcount=pcount=0;
         if(val & bv_top) ++lcount;
+        else ++pcount;
         if(val & bv_right) ++lcount;
+        else ++pcount;
         if(val & bv_bottem) ++lcount;
+        else ++pcount;
         if(val & bv_left) ++lcount;
+        else ++pcount;
     };
     void calc()
     {
@@ -170,14 +174,25 @@ struct BaR_Boxes
     
     bool contains(BaR_Box& bx)
     {
-        for(int i=box.size()-1; i>0; --i) 
+        for(int i=box.size()-1; i>=0; --i) 
             if (box[i].row == bx.row && box[i].col == bx.col) return true; 
+        return false;
+    };
+    
+    bool getBox(int r, int c, BaR_Box& b)
+    {
+        for(int i=box.size()-1; i>=0; --i) 
+            if (box[i].row == r && box[i].col == c) 
+            {
+                b=box[i];    
+                return true;
+            }
         return false;
     };
     
     bool contains(int r, int c)
     {
-        for(int i=box.size()-1; i>0; --i) 
+        for(int i=box.size()-1; i>=0; --i) 
             if (box[i].row == r && box[i].col == c) return true; 
         return false;
     };
@@ -335,58 +350,241 @@ struct BaR_Boxes
     };
 };
 
-struct BaR_Dinamics 
+struct BaR_Dynamics 
 {
-    std::vector<BaR_Boxes> boxes; // box
+    std::vector<BaR_Boxes> BoB; // Boxes of Boxes
+    //[0]=Whole Grid
     int total_lines;
+    //[1]=All valid moves
+    //[2]=All with 0 lines
+    //[3]=All with 1 lines
+    //[4]=All with 2 lines
+    //[5]=All with 3 lines
     
-    BaR_Dinamics():boxes(0), total_lines(0){boxes.reserve(7);};
-    BaR_Dinamics(std::vector<BaR_Boxes>& v):boxes(v.size())
+    
+    BaR_Dynamics():BoB(0), total_lines(0){BoB.reserve(7);};
+    BaR_Dynamics(std::vector<BaR_Boxes>& v):BoB(v.size())
     {   
-        for (size_t i=0; i<boxes.size(); ++i) 
-        {   boxes[i]=v[i];   }
+        for (size_t i=0; i<BoB.size(); ++i) 
+        {   BoB[i]=v[i];   }
     };
-    ~BaR_Dinamics()
+    ~BaR_Dynamics()
     {
-        if(boxes.size()) boxes.clear();
+        if(BoB.size()) BoB.clear();
     };
+    
     void calc_total_lines()
     {
         total_lines=0;
-        for (int i=0; i<boxes[0].box.size(); ++i)
+        for (int i=0; i<BoB[0].box.size(); ++i)
         {
-            if (boxes[0].box[i].row == 0) 
+            if (BoB[0].box[i].row == 0) 
             {
-                if (boxes[0].box[i].val & bv_top) ++total_lines;
+                if (BoB[0].box[i].val & bv_top) ++total_lines;
             }
-            if (boxes[0].box[i].col == 0) 
+            if (BoB[0].box[i].col == 0) 
             {
-                if (boxes[0].box[i].val & bv_left) ++total_lines;
+                if (BoB[0].box[i].val & bv_left) ++total_lines;
             }
-            if (boxes[0].box[i].val & bv_right) ++total_lines;
-            if (boxes[0].box[i].val & bv_bottem) ++total_lines;
+            if (BoB[0].box[i].val & bv_right) ++total_lines;
+            if (BoB[0].box[i].val & bv_bottem) ++total_lines;
         }    
     };
+    
+    void calc_all_moves()
+    {
+        BaR_Boxes bxsA = BaR_Boxes();
+        BaR_Boxes bxs0 = BaR_Boxes();
+        BaR_Boxes bxs1 = BaR_Boxes();
+        BaR_Boxes bxs2 = BaR_Boxes();
+        BaR_Boxes bxs3 = BaR_Boxes();
+        
+        BaR_Box tbox = BaR_Box();
+
+        for(int i=0; i<BoB[0].box.size(); ++i)
+            if(BoB[0].box[i].isOpen()) 
+            {
+                bxsA.box.push_back(BoB[0].box[i]);
+                if(BoB[0].box[i].lcount == 0) 
+                    bxs0.box.push_back(BoB[0].box[i]);
+                else if(BoB[0].box[i].lcount == 1) 
+                    bxs1.box.push_back(BoB[0].box[i]);
+                else if(BoB[0].box[i].lcount == 2) 
+                    bxs2.box.push_back(BoB[0].box[i]);
+                else if(BoB[0].box[i].lcount == 3) 
+                    bxs3.box.push_back(BoB[0].box[i]);
+            }
+        BoB.push_back(bxsA);
+        BoB.push_back(bxs0);
+        BoB.push_back(bxs1);
+        BoB.push_back(bxs2);
+        BoB.push_back(bxs3);
+    };
+    
+    bool canGoNorth(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.row == 0) return false;
+        else if(BoB[1].contains(bx.row-1,bx.col))
+        {    
+            abx.setPos(bx.row-1, bx.col);
+            abx.setMoveVal(bd_north);
+            return true;
+        }
+        return false;
+    };
+    bool canGoEast(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.col == BaR_SIZE-1) return false;
+        else if(BoB[1].contains(bx.row,bx.col+1))  
+        {        
+            abx.setPos(bx.row, bx.col+1);
+            abx.setMoveVal(bd_east);
+            return true;
+        }
+        return false;
+    };
+    bool canGoSouth(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.row == BaR_SIZE-1) return false;
+        else if(BoB[1].contains(bx.row+1,bx.col))  
+        {        
+            abx.setPos(bx.row+1, bx.col);
+            abx.setMoveVal(bd_south);
+            return true;
+        }
+        return false;
+    };
+    bool canGoWest(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.col == 0) return false;
+        else if(BoB[1].contains(bx.row,bx.col-1))  
+        {        
+            abx.setPos(bx.row, bx.col-1);
+            abx.setMoveVal(bd_west);
+            return true;
+        }
+        return false;
+    };
+    
+    bool pathinDirection(BaR_Box& bx, int dir, BaR_Box& nbx)
+    {
+        if (bx.lcount != 2) return false;//bd_north,bd_east,bd_south,bd_west
+        
+        if(dir == bd_any)
+        {
+            if(bx.northOpen() && canGoNorth(bx, nbx)) return true; 
+            if(bx.westOpen() && canGoWest(bx, nbx)) return true;
+            if(bx.eastOpen() && canGoEast(bx, nbx)) return true;
+            if(bx.southOpen() && canGoSouth(bx, nbx)) return true;
+        } 
+        else if(dir == bd_north)
+        {
+            if(bx.northOpen() && canGoNorth(bx, nbx)) return true; 
+            if(bx.eastOpen() && canGoEast(bx, nbx)) return true;
+            if(bx.westOpen() && canGoWest(bx, nbx)) return true;
+        } 
+        else if(dir == bd_east)
+        {
+            if(bx.northOpen() && canGoNorth(bx, nbx)) return true; 
+            if(bx.eastOpen() && canGoEast(bx, nbx)) return true;
+            if(bx.southOpen() && canGoSouth(bx, nbx)) return true;
+        } 
+        else if(dir == bd_south)
+        {
+            if(bx.westOpen() && canGoWest(bx, nbx)) return true;
+            if(bx.eastOpen() && canGoEast(bx, nbx)) return true;
+            if(bx.southOpen() && canGoSouth(bx, nbx)) return true;
+        } 
+        else if(dir == bd_west)
+        {
+            if(bx.westOpen() && canGoWest(bx, nbx)) return true;
+            if(bx.northOpen() && canGoNorth(bx, nbx)) return true;
+            if(bx.southOpen() && canGoSouth(bx, nbx)) return true;
+        } 
+        
+        return false;
+    };
+    int get_opposit_dir(int dr)
+    {
+        if(dr == bd_east) return bd_west;
+        else if(dr == bd_west) return bd_east;
+        else if(dr == bd_south) return bd_north;
+        else if(dr == bd_north) return bd_south;
+        return bd_any;
+    };
+    
+    bool box_na_path(BaR_Box& bx)
+    {
+        for(int i=6; i<BoB.size(); ++i)
+            if(BoB[i].contains(bx)) return true;
+        return false;
+    };
+    
+    int getShortestPathIndex()
+    {
+        int result =1, temp;
+        if (BoB.size() > 5) 
+        {
+            temp = BoB[6].boxCount();
+            result =6;
+            for(int i=7; i<BoB.size(); ++i)
+                if(BoB[i].boxCount() < temp) 
+                {
+                    temp = BoB[i].boxCount();
+                    result = i;
+                }
+        }
+        return result;
+    };
+    
+    void calc_one_path(BaR_Boxes& bxs, BaR_Box& bx)
+    {
+        BaR_Box tbox = BaR_Box();
+        BaR_Box nbox = BaR_Box();
+        BaR_Box tbox2 = BaR_Box();
+        tbox = bx;
+        bxs.add(tbox);
+        if(pathinDirection(tbox, bd_any, nbox)) 
+        {
+            tbox2.val = get_opposit_dir(nbox.val);
+            while(pathinDirection(tbox, tbox2.val, tbox2)) 
+                if(BoB[1].getBox(tbox2.row, tbox2.col, tbox)) bxs.add(tbox); 
+            if(BoB[1].getBox(nbox.row, nbox.col, tbox)) 
+            {
+                bxs.add(tbox); 
+                tbox.val = nbox.val;
+                while(pathinDirection(tbox, tbox2.val, tbox2)) 
+                    if(BoB[1].getBox(tbox2.row, tbox2.col, tbox)) bxs.add(tbox); 
+            }
+        }    
+    };
+    void calc_all_paths()
+    {
+        if(!BoB[4].boxCount()) return; 
+        BaR_Boxes bxs1 = BaR_Boxes();
+        
+        calc_one_path(bxs1, BoB[4].box[0]);
+        BoB.push_back(bxs1);
+        
+        for(int i=1; i<BoB[4].boxCount(); ++i)
+            if(!box_na_path(BoB[4].box[i])) 
+            {
+                calc_one_path(bxs1, BoB[4].box[i]);
+                BoB.push_back(bxs1);
+            }
+     };
+    
     void init_board(BaR_Grid& grid)
     {
         BaR_Boxes tempBoxes = BaR_Boxes();
         
         // index 0 = whole grid
         tempBoxes.setGrid(grid);
-        boxes.push_back(tempBoxes);
-        
-        // index 1 = all open boxes
-        tempBoxes.setMoves(grid);
-        boxes.push_back(tempBoxes);
-        
+        BoB.push_back(tempBoxes);
         calc_total_lines();
         
-        // index 2 > will connected paths
-        //if(total_lines > 29)
-            //find paths
-            
-        
-        
+        // indexes 1-5 all posible moves
+        calc_all_moves();    
     };
 
 };
@@ -534,7 +732,59 @@ struct BaR_Logic
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
         
+    }; 
+    
+    void setNextMove3(BaR_Grid& grid, next_move& nm)
+    {
+        BaR_Box tbox = BaR_Box(); // temp box
+        BaR_Dynamics data = BaR_Dynamics();
+        data.init_board(grid);
+        /*
+        std::cout << "Total Lines = " << data.total_lines << std::endl;
+        std::cout << "Total Moves = " << data.BoB[1].boxCount() << std::endl;
+        std::cout << "Total with 0 Lines = " << data.BoB[2].boxCount() << std::endl;
+        std::cout << "Total with 1 Line = " << data.BoB[3].boxCount() << std::endl;
+        std::cout << "Total with 2 Lines = " << data.BoB[4].boxCount() << std::endl;
+        std::cout << "Total with 3 Lines = " << data.BoB[5].boxCount() << std::endl;
+        //*/
+        
+        if (data.BoB[1].boxCount() == 0) {std::cout<< "noMove";return;}//Game Over
+        // set Move poition
+        else if(data.BoB[1].boxCount() == 1) 
+        {
+            tbox=data.BoB[1].box[0];
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        else if(data.BoB[5].boxCount())//last line
+        {
+            tbox=data.BoB[5].box[0];
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        else if(data.total_lines < 2 && firstmoveisset)
+        {
+        	nm=firstMove;
+        }
+        else if(data.BoB[1].boxCount() == data.BoB[4].boxCount())//only paths left
+        {
+            data.calc_all_paths();
+            tbox=data.BoB[data.getShortestPathIndex()].box[0];
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        else
+        {
+            getBestMoveBox(grid, tbox);
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+
+        //if (data.BoB.size()>5) 
+        //    std::cout << "Total Pathss = " << (data.BoB.size()-5) << std::endl;
+    
     };   
+    
     
     void setFirstMove(int r, int c, int d)
     {
@@ -555,14 +805,16 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    /* rem switch
+    //* rem switch
      grid.getTestInput();
      /*/
     grid.getInput();
     //*/
-    // logic.setFirstMove(1,2,bd_east);
+    logic.setFirstMove(2,2,bd_east);
     
-    logic.setNextMove2(grid, nm);
+    logic.setNextMove3(grid, nm);
+    
+
     
     std::cout << nm.row << " ";
     std::cout << nm.col << " ";
