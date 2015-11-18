@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 2;
+const int DaB_MINOR_VERSION = 3;
 
 #define BaR_SIZE 5
 
@@ -457,6 +457,8 @@ struct BaR_Logic
         {
             if(moves.box[o].lcount == 3)
             { b=moves.box[o]; return; }
+            //testing
+            /*
             std::cout << moves.box[o].row << " ";
             std::cout << moves.box[o].col << " ";
             std::cout << moves.box[o].val << " ";
@@ -464,6 +466,7 @@ struct BaR_Logic
                 std::cout << " ";
             std::cout << moves.box[o].lcount << " ";
             std::cout << moves.box[o].pcount << std::endl;
+             //*/
         }
         for(o=0; o<moves.boxCount();++o)
             if(moves.box[o].lcount == 1)
@@ -603,7 +606,7 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    //* rem switch
+    /* rem switch
      grid.getTestInput3();
      //grid.print_grid();
      /*/
