@@ -10,22 +10,12 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 1;
-const int DaB_MINOR_VERSION = 4;
+const int DaB_MINOR_VERSION = 5;
 
 #define BaR_SIZE 5
 
 enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16};
 
-struct Position 
-{
-    int x, y;
-    Position(){x=y=0;};
-    Position(int ax, int ay){x=ax;y=ay;};
-    Position(Position& a){x=a.x;y=a.y;};
-    ~Position(){};
-    void set(int px, int py){x=px;y=py;}; 
-    void set(Position& a){x=a.x;y=a.y;}; 
-};
 
 struct next_move 
 {
@@ -38,11 +28,6 @@ struct next_move
     {
         row = r;
         col = c;
-    };
-    void setMovePos(Position& p)
-    {
-        row = p.x;
-        col = p.y;
     };
     void setMoveVal(int v)
     {
@@ -90,13 +75,11 @@ struct BaR_Grid
 };
 struct BaR_Logic 
 {
-    //    std::vector<Position> my_moves;
     std::vector<int> my_row;
     std::vector<int> my_col;
     std::vector<int> my_opt;
     
     BaR_Logic():my_row(0),my_col(0),my_opt(0){};
-    //    BaR_Logic(std::vector<position>& vp):my_moves(0){my_moves.push_back(vp);};
     ~BaR_Logic()
     {
         if(my_row.size()) my_row.clear();
@@ -115,23 +98,14 @@ struct BaR_Logic
     
     void setMyMoves(BaR_Grid& grid)
     {
-        Position p;
         for (int r=0; r<BaR_SIZE; ++r) 
             for (int c=0; c<BaR_SIZE; ++c) 
-                if (!(grid.box[r][c] & bv_taken)) 
+                if ((grid.box[r][c] != (bv_top | bv_right | bv_bottem | bv_left )) 
                 {
-                    if((grid.box[r][c] & bv_top) && (grid.box[r][c] & bv_bottem) 
-                       && (grid.box[r][c] & bv_left) && (grid.box[r][c] & bv_right))
-                    {p.x=r; p.y=c;}
-                    else
-                    {
-                        my_row.push_back(r);
+                         my_row.push_back(r);
                         my_col.push_back(c);
                         int temp = getOptions(grid.box[r][c]);
                         my_opt.push_back(temp);
-                    }
-                    // p.set(r, c);
-                    // my_moves.push_back(p);
                 }
     };
     void setNextMove(BaR_Grid& grid, next_move& nm)
