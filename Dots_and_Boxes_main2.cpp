@@ -100,14 +100,8 @@ struct next_move
 struct BaR_Grid
 {
     int player;
-    //* rem switch
     int box[BaR_SIZE][BaR_SIZE];
 	BaR_Grid(){zero();};
-    /*/
-     std::vector<uint8_t,uint8_t> box;
-     BaR_Grid():box(BaR_SIZE,BaR_SIZE){};
-     ~BaR_Grid(){if(box.size()) box.clear();};
-     //*/
     void getInput()
     {   
         int r,c;
@@ -160,14 +154,14 @@ struct BaR_Boxes
 
     bool contains(BaR_Box& bx)
     {
-        for(int i=box.size(); i>0; --i) 
+        for(int i=box.size(); i>=0; --i) 
             if (box[i].row == bx.row && box[i].col == bx.col) return true; 
         return false;
     };
     
     bool contains(int r, int c)
     {
-        for(int i=box.size(); i>0; --i) 
+        for(int i=box.size(); i>=0; --i) 
             if (box[i].row == r && box[i].col == c) return true; 
         return false;
     };
@@ -623,7 +617,7 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    //* rem switch
+    /* rem switch
      grid.getTestInput();
      /*/
     grid.getInput();
