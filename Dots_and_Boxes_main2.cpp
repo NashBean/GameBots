@@ -1,9 +1,19 @@
+//
+//  Created by nash.
+//  Copyright© 2015+ iBean Software. All rights reserved.
+//  iBeanSoftware@GMail.com
+//  https://www.facebook.com/iBeanSowtware
+
+
 #include <iostream>
 #include <vector>
 
+const int DaB_MAJOR_VERSION = 2;
+const int DaB_MINOR_VERSION = 7;
+
 #define BaR_SIZE 5
 
-enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16};
+enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16,bv_path=32};
 enum Box_Direct {bd_north,bd_east,bd_south,bd_west};
 
 struct Position 
@@ -21,7 +31,7 @@ struct BaR_Box
 {
     int row, col;//row, colom
     int val, lcount, path;//value, line_count ,no_line_enum      
-
+    
     BaR_Box():row(0),col(0),val(0),lcount(0),path(0){};
     ~BaR_Box(){};
     BaR_Box& operator =(const BaR_Box& b)
@@ -51,6 +61,14 @@ struct BaR_Box
     void calc()
     {
         calcLineCount();
+        if (lcount == 4) 
+        {
+            val |= bv_taken;
+        }
+        else if(lcount == 2) 
+        {
+            val |= bv_path;
+        }
     };
     
     bool northOpen()
@@ -69,8 +87,6 @@ struct BaR_Box
     {
         return !(val & bv_left);
     };
-
-    
 };
 
 
@@ -100,8 +116,14 @@ struct next_move
 struct BaR_Grid
 {
     int player;
+    //* rem switch
     int box[BaR_SIZE][BaR_SIZE];
 	BaR_Grid(){zero();};
+    /*/
+     std::vector<uint8_t,uint8_t> box;
+     BaR_Grid():box(BaR_SIZE,BaR_SIZE){};
+     ~BaR_Grid(){if(box.size()) box.clear();};
+     //*/
     void getInput()
     {   
         int r,c;
@@ -119,7 +141,7 @@ struct BaR_Grid
         int r,c;
         for (r=0; r<BaR_SIZE; ++r) 
             for (c=0; c<BaR_SIZE; ++c) 
-                box[r][c] = 3;
+                box[r][c] = (bv_top | bv_bottem);
         player = 1;
     };
 	void zero()
@@ -151,21 +173,21 @@ struct BaR_Boxes
         {   box[i]=x.box[i];   }
         return *this;
     };
-
+    
     bool contains(BaR_Box& bx)
     {
-        for(int i=box.size(); i>=0; --i) 
+        for(int i=box.size()-1; i>=0; --i) 
             if (box[i].row == bx.row && box[i].col == bx.col) return true; 
         return false;
     };
     
     bool contains(int r, int c)
     {
-        for(int i=box.size(); i>=0; --i) 
+        for(int i=box.size()-1; i>=0; --i) 
             if (box[i].row == r && box[i].col == c) return true; 
         return false;
     };
-
+    
     void add(BaR_Box& bx)
     {
         if(!contains(bx)) box.push_back(bx);
@@ -225,7 +247,7 @@ struct BaR_Boxes
                 	//{
                     tbox.row=r; tbox.col=c;
                     tbox.val=grid.box[r][c];
-                    tbox.calcLineCount();
+                    tbox.calc();
                     box.push_back(tbox);
                 	//}
                 }
@@ -235,7 +257,7 @@ struct BaR_Boxes
     {
         if (bx.lcount != 2) return false;//bd_north,bd_east,bd_south,bd_west
         BaR_Box tbox= BaR_Box();
-
+        
         if(dir == bd_north)
         {
             if(bx.northOpen() && canGoNorth(grid, bx, tbox)) 
@@ -295,12 +317,12 @@ struct BaR_Boxes
         if(w==0) return;
         
         for(int i=0; i<10; ++i) 
-             if (!pathinDirect(grid, tbox[0], direct[0]))   break;
-//        while(pathinDirect(grid,  tbox[0], direct[0]));
+            if (!pathinDirect(grid, tbox[0], direct[0]))   break;
+        //        while(pathinDirect(grid,  tbox[0], direct[0]));
         if(w>1)
             for(int i=0; i<10; ++i) 
                 if (!pathinDirect(grid, tbox[1], direct[1]))   break;
-//            while(pathinDirect(grid, tbox[1], direct[1]));
+        //            while(pathinDirect(grid, tbox[1], direct[1]));
         return;
     };
 };
@@ -312,7 +334,8 @@ struct BaR_Logic
     std::vector<int> my_opt;
     BaR_Boxes moves;
     
-    BaR_Logic():my_row(0),my_col(0),my_opt(0),moves(){};
+    BaR_Logic():my_row(0),my_col(0),my_opt(0),moves(),firstMove()
+    {firstmoveisset=false;};
     //    BaR_Logic(std::vector<position>& vp):my_moves(0){my_moves.push_back(vp);};
     ~BaR_Logic()
     {
@@ -496,10 +519,10 @@ struct BaR_Logic
             if(moves.box[o].lcount == 3)
             { b=moves.box[o]; return; }
         for(o=0; o<moves.boxCount();++o)
-            if(moves.box[o].lcount == 0)
+            if(moves.box[o].lcount == 1)
             { b=moves.box[o]; return; }
         for(o=0; o<moves.boxCount();++o)
-            if(moves.box[o].lcount == 1)
+            if(moves.box[o].lcount == 0)
             { b=moves.box[o]; return; }
         
         std::vector<BaR_Boxes> arun;
@@ -508,7 +531,7 @@ struct BaR_Logic
         
         temp.setPath(grid, moves.box[0]);
         arun.push_back(temp);
-
+        
         for(o=1; o<moves.boxCount();++o)
         {
             flag = 0;
@@ -523,30 +546,19 @@ struct BaR_Logic
         }
         c = arun[0].boxCount();
         flag = 0;
-        for(int i=0; i<arun.size(); ++i) 
+        for(int i=1; i<arun.size(); ++i) 
             if(arun[i].boxCount() < c)
             {c=arun[i].boxCount(); flag = i;}
         b=arun[flag].box[0];
         return;
     };
     
-int getBestDirection(BaR_Grid& grid, BaR_Box& b)
+    int getBestDirection(BaR_Grid& grid, BaR_Box& b)
     {
         
         int temp=0;
         temp = b.val;
         
-        if(b.southOpen())
-        {
-         	if(b.lcount == 3 || b.row == BaR_SIZE-1)
-        	{
-        		return bd_south;
-        	}
-        	else if(getOptions(grid.box[b.row+1][b.col]) != 2) 
-        	{
-                return bd_south;
-        	}
-        }
         if(b.eastOpen())
         {
          	if(b.lcount == 3 || b.col == BaR_SIZE-1)
@@ -556,6 +568,17 @@ int getBestDirection(BaR_Grid& grid, BaR_Box& b)
         	else if(getOptions(grid.box[b.row][b.col+1]) != 2) 
         	{
                 return bd_east;
+        	}
+        }
+        if(b.southOpen())
+        {
+         	if(b.lcount == 3 || b.row == BaR_SIZE-1)
+        	{
+        		return bd_south;
+        	}
+        	else if(getOptions(grid.box[b.row+1][b.col]) != 2) 
+        	{
+                return bd_south;
         	}
         }
         if(b.westOpen())
@@ -580,17 +603,17 @@ int getBestDirection(BaR_Grid& grid, BaR_Box& b)
                 return bd_north;
         	}
         }
- 
+        
         // add more logic
-            if(b.southOpen())
-                return bd_south;
-       		else if(b.eastOpen())
-                return bd_east;
-        	else if(b.westOpen())
-                return bd_west;
-         //	else if(b.northOpen())
-                return bd_north;
-     };
+        if(b.southOpen())
+            return bd_south;
+        else if(b.eastOpen())
+            return bd_east;
+        else if(b.northOpen())
+            return bd_north;
+        //	else if(b.northOpen())
+        return bd_west;
+    };
     
     void setNextMove2(BaR_Grid& grid, next_move& nm)
     {
@@ -598,19 +621,33 @@ int getBestDirection(BaR_Grid& grid, BaR_Box& b)
         BaR_Box tbox = BaR_Box(); // temp box
         if (moves.box.size() == 0) {std::cout<< "noMove";return;}//Game Over
         // set Move poition
-        if (moves.box.size() == 1) 
+        else if (moves.box.size() == 1) 
             tbox=moves.box[0];
+        else if(moves.box.size() == 25 && firstmoveisset)
+        	nm=firstMove;
         else
             getBestMoveBox(grid, tbox);
-        nm.setMovePos(tbox.row, tbox.col);
         
-        // set Move Value
-        nm.setMoveVal(getBestDirection(grid, tbox));
+        if(!firstmoveisset || moves.box.size() != 25)
+        {
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
         
     };   
-    
+    void setFirstMove(int r, int c, int d)
+    {
+    	// r == row c == col  d == Box_Direct
+    	//enum Box_Direct {bd_north,bd_east,bd_south,bd_west};
+		firstMove.row = r;
+		firstMove.col = c;
+		firstMove.value = d;
+		firstmoveisset = true;
+    };
+private:
+	bool firstmoveisset;
+    next_move firstMove;
 };
-
 
 int main()
 {
@@ -622,6 +659,7 @@ int main()
      /*/
     grid.getInput();
     //*/
+    // logic.setFirstMove(1,2,bd_east);
     logic.setNextMove2(grid, nm);
     
     std::cout << nm.row << " ";
@@ -630,3 +668,4 @@ int main()
 	
     return 0;
 }
+
