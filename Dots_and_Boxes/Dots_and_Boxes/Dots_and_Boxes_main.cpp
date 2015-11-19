@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 3;
+const int DaB_MINOR_VERSION = 5;
 
 #define BaR_SIZE 5
 
@@ -20,9 +20,11 @@ enum Box_Direct {bd_north,bd_east,bd_south,bd_west,bd_any};
 struct BaR_Box 
 {
     int row, col;//row, colom
-    int val, lcount, pcount;//value, line_count ,no_line_enum      
+    int val, lcount, pcount;//value, line_count ,no_line_enum 
+    int runID;
     
-    BaR_Box():row(0),col(0),val(0),lcount(0),pcount(0){};
+    
+    BaR_Box():row(0),col(0),val(0),lcount(0),pcount(0),runID(0){};
     ~BaR_Box(){};
     BaR_Box& operator =(const BaR_Box& b)
     {
@@ -62,7 +64,10 @@ struct BaR_Box
         else if(lcount == 2) 
         {
             val |= bv_path;
+            runID = 0;
         }
+        else
+            runID = -1;
     };
     bool isOpen()
     {
@@ -119,10 +124,25 @@ struct next_move
 
 struct BaR_Grid
 {
-    int player;
+    int player, total_lines;
+    
     //int box[BaR_SIZE][BaR_SIZE];
     BaR_Box b2[BaR_SIZE][BaR_SIZE];
-	BaR_Grid(){};//{zero();};
+    
+	BaR_Grid():total_lines(0){zero();};
+    
+    void calc()
+    {
+        int r,c;
+        for (r=0; r<BaR_SIZE; ++r) 
+            for (c=0; c<BaR_SIZE; ++c) 
+            {
+                b2[r][c].calc();
+                total_lines+=b2[r][c].lcount; 
+            }
+        
+    };
+    
     void getInput()
     {   
         int r,c;
@@ -134,7 +154,7 @@ struct BaR_Grid
               //  box[r][c] = temp;
                 b2[r][c].setPos(r, c);
                 b2[r][c].setMoveVal(temp);
-                b2[r][c].calc();
+                total_lines+=b2[r][c].lcount; 
             }
         std::cin >> player;
     };
@@ -146,7 +166,6 @@ struct BaR_Grid
             {
                 b2[r][c].setPos(r, c);
                 b2[r][c].setMoveVal(0);
-                b2[r][c].calc();
             }
         player = 1;
     };
@@ -157,8 +176,7 @@ struct BaR_Grid
             for (c=0; c<BaR_SIZE; ++c) 
             {
                 b2[r][c].setPos(r, c);
-                b2[r][c].setMoveVal(bv_top | bv_bottem);
-                b2[r][c].calc();
+                b2[r][c].setMoveVal(bv_top | bv_bottem | bv_left | bv_right);
             }
         player = 1;
     };
@@ -172,27 +190,23 @@ struct BaR_Grid
                 {
                     b2[r][c].setPos(r, c);
                     b2[r][c].setMoveVal(bv_left | bv_top);
-                    b2[r][c].calc();
                     ++a;
                 }
                 if (a == 2) 
                 {
                     b2[r][c].setPos(r, c);
                     b2[r][c].setMoveVal(bv_top | bv_right);
-                    b2[r][c].calc();
-                     a = 0;
+                      a = 0;
                 }
                 else
                 {
                     b2[r][c].setPos(r, c);
                     b2[r][c].setMoveVal(bv_bottem);
-                    b2[r][c].calc();
                     ++a;
                 }
-                b2[0][1].val |= bv_top;
-                b2[0][1].val |= bv_right;
-                b2[0][1].val |= bv_left;
-                b2[0][1].calc();
+               // b2[0][1].val |= bv_top;
+               // b2[0][1].val |= bv_right;
+               // b2[0][1].val |= bv_left;
                 //b2[0][1].val |= bv_left;
                 
             }
@@ -204,10 +218,61 @@ struct BaR_Grid
         
         
         b2[1][0].val |= bv_left;
-        b2[1][0].calc();
         b2[3][0].val |= bv_left;
-        b2[3][0].calc();
         
+    };
+    
+    bool hasBestDirection(BaR_Box& b, int& dir)
+    {
+        int temp=0;
+        temp = b.val;
+        BaR_Box tb = BaR_Box();
+        
+        if(b.westOpen())
+        {
+            if(b.lcount == 3 || b.col == 0)
+            {
+                dir = bd_west; return true;
+            }
+            if(b2[b.row][b.col-1].lcount != 2) 
+            {
+                dir = bd_west; return true;
+            }
+        }
+        if(b.southOpen())
+        {
+            if(b.lcount == 3 || b.row == BaR_SIZE-1)
+            {
+                dir = bd_south; return true;
+            }
+            if(b2[b.row+1][b.col].lcount != 2) 
+            {
+                dir = bd_south; return true;
+            }
+        }
+        if(b.eastOpen())
+        {
+            if(b.lcount == 3 || b.col == BaR_SIZE-1)
+            {
+                dir = bd_east; return true;
+            }
+            if(b2[b.row][b.col+1].lcount != 2) 
+            {
+                dir = bd_east; return true;
+            }
+        }
+        if(b.northOpen())
+        {
+            if(b.lcount == 3 || b.row == 0)
+            {
+                dir = bd_north;
+            }
+            if(b2[b.row-1][b.col].lcount != 2) 
+            {
+                dir = bd_north; return true;
+            }
+        }
+        return false;
     };
     void print_grid()
     {
@@ -335,6 +400,7 @@ struct BaR_Boxes
         abx = grid.b2[bx.row][bx.col-1];
         return true;
     };
+    
     void setGrid(BaR_Grid& grid)
     {
         if(box.size()) box.clear();
@@ -360,7 +426,20 @@ struct BaR_Boxes
                 }
     };
     
-    bool pathinDirection(BaR_Grid& grid,  BaR_Box& bx, int dir)
+    void setliners(BaR_Grid& grid, int lines)
+    {
+        if(box.size()) box.clear();
+        BaR_Box tbox = BaR_Box();
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+                if ((grid.b2[r][c].lcount == lines)) 
+                {   
+                    tbox=grid.b2[r][c];
+                    box.push_back(tbox);
+                }
+    };
+    
+   bool pathinDirection(BaR_Grid& grid,  BaR_Box& bx, int dir)
     {
         if (bx.lcount != 2) return false;//bd_north,bd_east,bd_south,bd_west
         BaR_Box tbox= BaR_Box();
@@ -423,11 +502,11 @@ struct BaR_Boxes
         { add(tbox[w]); direct[w] = bd_west; ++w; }
         if(w==0) return;
         
-        for(int i=0; i<10; ++i) 
+        for(int i=0; i<25; ++i) 
             if (!pathinDirection(grid, tbox[0], direct[0]))   break;
         //        while(pathinDirect(grid,  tbox[0], direct[0]));
         if(w>1)
-            for(int i=0; i<10; ++i) 
+            for(int i=0; i<25; ++i) 
                 if (!pathinDirection(grid, tbox[1], direct[1]))   break;
         //            while(pathinDirect(grid, tbox[1], direct[1]));
         return;
@@ -442,10 +521,9 @@ struct BaR_Boxes
 struct BaR_Logic 
 {
     BaR_Boxes moves;
-    
-    BaR_Logic():moves(),firstMove()
+    BaR_Grid tgrid;
+    BaR_Logic():moves(), tgrid(),firstMove()
     {firstmoveisset=false;};
-    //    BaR_Logic(std::vector<position>& vp):my_moves(0){my_moves.push_back(vp);};
     ~BaR_Logic()
     {};
     
@@ -555,6 +633,7 @@ struct BaR_Logic
         }
         
         // add more logic
+       
         if(b.southOpen())
             return bd_south;
         else if(b.eastOpen())
@@ -587,6 +666,77 @@ struct BaR_Logic
         }
     }; 
     
+    void setNextMove3(BaR_Grid& grid, next_move& nm)
+    {
+        BaR_Box tbox = BaR_Box(); // temp box
+        BaR_Boxes moves2 = BaR_Boxes();
+        BaR_Boxes moves3 = BaR_Boxes();
+
+       // BaR_Dynamics data = BaR_Dynamics();
+       // data.init_board(grid);
+        moves.setMoves(grid);
+        moves2.setliners(grid, 2);
+        moves3.setliners(grid, 3);
+
+        int tdir;
+        //*  for debugging only
+     //    std::cout << "Total Lines = " << grid.total_lines << std::endl;
+     //    std::cout << "Total Moves = " << moves.boxCount() << std::endl;
+         //std::cout << "Total with 0 Lines = " <<.boxCount() << std::endl;
+         //std::cout << "Total with 1 Line = " << .boxCount() << std::endl;
+     //    std::cout << "Total with 2 Lines = " << moves2.boxCount() << std::endl;
+     //    std::cout << "Total with 3 Lines = " << moves3.boxCount() << std::endl;
+         //*/
+        
+        if (moves.boxCount() == 0) {std::cout<< "noMove";return;}//Game Over
+        // set Move poition
+        else if(moves.boxCount() == 1) 
+        {
+            tbox=moves.box[0];
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        else if(moves3.boxCount())//last line
+        {
+            tbox=moves3.box[0];
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        else if(grid.total_lines < 2 && firstmoveisset)
+        {
+            nm=firstMove;
+        }
+        else if(moves.boxCount() == moves2.boxCount())//only paths left
+        {
+          //  grid.calc_all_paths();
+          //  tbox=data.BoB[data.getShortestPathIndex()].box[0];
+            // ----- todo  ---------
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        else
+        {
+            getBestMoveBox(grid, tbox);
+            if(grid.hasBestDirection(tbox, tdir)) 
+            {
+                nm.setMovePos(tbox.row, tbox.col);
+                nm.setMoveVal(tdir);
+            }
+            else
+            {
+                grid.b2[tbox.row][tbox.col].val &= bv_taken;
+                getBestMoveBox(grid, tbox);
+                nm.setMovePos(tbox.row, tbox.col);
+                nm.setMoveVal(getBestDirection(grid, tbox));
+            }
+            
+        }
+        
+     //   if (data.BoB.size()>5) 
+     //       std::cout << "Total Paths = " << (data.BoB.size()-5) << std::endl;
+        
+    };   
+ 
     void setFirstMove(int r, int c, int d)
     {
     	// r == row c == col  d == Box_Direct
@@ -596,6 +746,7 @@ struct BaR_Logic
 		firstMove.value = d;
 		firstmoveisset = true;
     };
+
 private:
 	bool firstmoveisset;
     next_move firstMove;
@@ -607,14 +758,15 @@ int main()
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
     /* rem switch
-     grid.getTestInput3();
-     //grid.print_grid();
+     grid.getTestInput();
+     grid.print_grid();
      /*/
     grid.getInput();
     //*/
-//    logic.setFirstMove(2,2,bd_east);
+    logic.setFirstMove(2,2,bd_east);
+    grid.calc();
     
-    logic.setNextMove2(grid, nm);
+    logic.setNextMove3(grid, nm);
     
 
     
