@@ -1,0 +1,157 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fswiss\fcharset0 Helvetica;\f2\fnil\fcharset0 HelveticaNeue;
+\f3\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue255;\red53\green76\blue140;\red14\green20\blue26;
+\red57\green70\blue82;\red38\green38\blue38;\red234\green234\blue234;\red0\green80\blue231;}
+\margl1440\margr1440\vieww9000\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs24 \cf0 Dots and Boxes\
+Max. Marks: 100\
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth940\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx2880
+\clvertalc \clshdrawnil \clwWidth800\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl80 \clpadr0 \gaph\cellx5760
+\clvertalc \clshdrawnil \clwWidth580\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sl400\qc
+
+\f1\b\fs22 \cf2 \shad\shadx0\shady20\shadr0\shado255 \shadc3 Like\cell 
+\pard\intbl\itap1\pardeftab720\sl400\qc
+\cf2 \shad\shadx0\shady20\shadr0\shado255 \shadc3 \
+\pard\intbl\itap1\pardeftab720\sl400
+\cf2 \shad\shadx0\shady20\shadr0\shado255 \shadc3 Share\cell 
+\pard\intbl\itap1\pardeftab720\sl360
+
+\b0 \cf5 \cb2 \shad0 4\cf4 \cb1 \
+\pard\intbl\itap1\pardeftab720\sl280
+\cf4 \strike \strikec4 \
+\pard\intbl\itap1\pardeftab720\sl280
+
+\i \cf4 \strike0\striked0 \cell \lastrow\row
+\pard\pardeftab720\sl360
+{\field{\*\fldinst{HYPERLINK "https://twitter.com/share"}}{\fldrslt 
+\f2\b \cf6 \cb7 \shad\shadx0\shady-20\shadr0\shado0 \shadc0 \
+\pard\pardeftab720\sl360\ql\qnatural
+
+\i0 \cf6 \shad\shadx0\shady-20\shadr0\shado0 \shadc0 Tweet}}
+\f2 \cf6 \cb2 \
+\pard\pardeftab720\qc
+\cf6 \
+\pard\pardeftab720\qc
+
+\i0 \cf6 \ul \ulc6 \
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs24 \cf0 \cb1 \ulnone \
+\
+\pard\pardeftab720\sa120\ql\qnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural
+
+\b \cf0 Dots and Boxes
+\b0  is a popular two-player board game. We will play {\field{\*\fldinst{HYPERLINK "https://en.wikipedia.org/wiki/Dots_and_Boxes"}}{\fldrslt \cf8 \ul \ulc8 Dots and Boxes}} on a 5x5 grid of boxes (6x6 grid of dots). The game starts with empty grid of dots (no lines and no filled boxes). The player who has its turn to play can add a single horizontal or vertical line between two unjoined adjacent dots. In this move, if the player completes the fourth side of a box then the player owns that box, earns one point and takes another turn. Otherwise, the alternate player takes next turn to play. When a box is owned by some player, it's filled with the corresponding player's color. The game ends when no more lines can be placed. The winner of the game is the player with the most points. Player 1 takes the first turn when the game starts.\
+\pard\pardeftab720\ql\qnatural
+
+\f1 \cf0 {{\NeXTGraphic dots-boxes.png \width7640 \height7560 \noorient
+}¬}
+\f0 \
+Your aim is to implement a bot which plays 
+\b Dots and Boxes
+\b0  with other's or default bot. The program you submit will run for each move played by your player in the game. \
+\
+\pard\pardeftab720\ql\qnatural
+
+\b \cf0 Input
+\b0  \
+The input will be a 5x5 matrix consisting of positive integers. Each integer represents the state of a box in the grid. Then next line in the input contains your player id (1 or 2). \
+\
+The coordinate of a box is represented by [row, column]. In the given matrix, coordinate of the top-left box is [0,0] and bottom-right is [4,4]. A row increases from top to bottom and column increases from left to right. \
+\
+The state of a box(i.e which sides of that box are joined) is a positive integer which can be perceived as a sequence of bits in it's binary representation. The value tells following information about the box. For better clarity, refer to following image:\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f1 \cf0 {{\NeXTGraphic binrep.png \width14720 \height4160 \noorient
+}¬}
+\f0  \
+\
+1) The 4 least significant bits of a box's value tells which of the 4 lines have been added around the box. The bit indexes 0 to 3 correspond to top, right, bottom and left side of a box respectively. A bit is 0 or 1; 1 if there is line on corresponding side, otherwise 0. (The index of the least significant/rightmost bit is 0 and it increases right to left.) \
+\
+2) If all the 4 least significant bits are 1, then the box is owned by a player. The 5th least significant bit (bit index 4) tells whether it is owned by player 1 or 2. If the bit value is 0, the box is owned by Player 1 otherwise it's owned by Player 2. \
+\
+Hence, the valid values for box representation is the set \{0..15, 31\}. The box owned by Player 1 has value 15 (00001111 in binary) and the box owned by Player 2 has value 31 (00011111 in binary). \
+\
+\pard\pardeftab720\ql\qnatural
+
+\b \cf0 Output
+\b0  \
+Print the coordinates of the box [row, column] and the side of that box where you want to draw a line connecting the dots. The side can have a value from 0 to 3 (which designates top, right, bottom, left respectively). \
+\
+
+\b Starting state
+\b0  \
+0 0 0 0 0\
+0 0 0 0 0\
+0 0 0 0 0\
+0 0 0 0 0\
+0 0 0 0 0\
+\
+
+\b Scoring
+\b0  \
+The scores will be calculated by running a tournament of all submissions. The tournament of bots will start on Monday (16 Nov.). Score will be assigned according to the Glicko-2 rating system. \
+\
+\pard\pardeftab720\sa120\ql\qnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural
+\cf0 Sample Input\
+\pard\pardeftab720\ql\qnatural
+{\field{\*\fldinst{HYPERLINK "https://he-s3.s3.amazonaws.com/media/hackathon/battle-of-bots-2/problems/9c8a165e-8-sample_input.txt?Signature=1Uu4C2McjD7Zpfq%2FaTWRkC68e0Y%3D&Expires=1447450755&AWSAccessKeyId=AKIAJLE6MUHDYS3HN6YQ"}}{\fldrslt \cf8 \ul \ulc8 (Plaintext Link)}}\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f3 \cf0 0 0 0 0 0\
+0 0 0 0 0\
+0 0 0 0 0\
+0 0 0 0 0\
+0 0 0 0 0\
+1\
+\pard\pardeftab720\ql\qnatural
+
+\f0 \cf0 Sample Output\
+\pard\pardeftab720\ql\qnatural
+{\field{\*\fldinst{HYPERLINK "https://he-s3.s3.amazonaws.com/media/hackathon/battle-of-bots-2/problems/9d60043a-8-sample_output.txt?Signature=CHDoa6nzPxnPthkNWpWdQHpmqZU%3D&Expires=1447450755&AWSAccessKeyId=AKIAJLE6MUHDYS3HN6YQ"}}{\fldrslt \cf8 \ul \ulc8 (Plaintext Link)}}\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f3 \cf0 2 3 1\
+\pard\pardeftab720\ql\qnatural
+
+\f0 \cf0 \
+Explanation\
+This is player 1's turn, and the player draws the line on right side (which is 1) of box [2, 3]. Since this line is adjacent to box [2, 4] too and it's on left of it, the value of this box changes too.\
+\
+Box [2, 3]'s value = 2 (which is "00000010" in binary representation)\
+Box [2, 4]'s value = 8 (which is "00001000" in binary representation)\
+\
+After the player's move the state of game becomes: \
+\pard\pardeftab720\ql\qnatural
+
+\f3 \cf0 0 0 0 0 0\
+0 0 0 0 0\
+0 0 0 2 8\
+0 0 0 0 0\
+0 0 0 0 0\
+\pard\pardeftab720\ql\qnatural
+
+\f0 \cf0 \
+\pard\pardeftab720\sa120\ql\qnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural
+\cf0 Time Limit: 1 sec(s) for each input file.\
+Memory Limit: 256 MB\
+Source Limit: 1024 KB\
+Marking Scheme: Marks are awarded if any testcase passes.\
+Allowed languages: C, CPP, CLOJURE, CSHARP, GO, HASKELL, JAVA, JAVASCRIPT, JAVASCRIPT_NODE, LISP, OBJECTIVEC, PASCAL, PERL, PHP, PYTHON, RUBY, R, RUST, SCALA\
+}
