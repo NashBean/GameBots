@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 2;
-const int DaB_MINOR_VERSION = 8;
+const int DaB_MINOR_VERSION = 9;
 
 #define BaR_SIZE 5
 
@@ -217,7 +217,7 @@ struct next_move
 
 //* REM Switch
 
-struct BaR_Grid //        Grid
+struct BaR_Grid
 {
     int player, total_lines;
     
@@ -249,6 +249,9 @@ struct BaR_Grid //        Grid
                     ++total_lines;
             }
         }
+        
+        
+        
     };
     
     void getInput()
@@ -1139,23 +1142,28 @@ struct BaR_Logic
     
     void setNextMove2(BaR_Grid& grid, next_move& nm)
     {
+        
         moves.setMoves(grid);
         BaR_Box tbox = BaR_Box(); // temp box
         if (moves.box.size() == 0) {std::cout<< "noMove";return;}//Game Over
         // set Move poition
         else if (moves.box.size() == 1) 
-            tbox=moves.box[0];
-   //     else if(moves.box.size() == 25 && firstmoveisset)
-   //     	nm=firstMove;
-        else
-            getBestMoveBox(grid, tbox);
-        
-        if(!firstmoveisset || moves.box.size() != 25)
         {
+            tbox=moves.box[0];
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
-        
+        else if(grid.total_lines < 2 && firstmoveisset)
+        {
+        	nm=firstMove;
+        }
+        else
+        {
+            getBestMoveBox(grid, tbox);
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+         
     };   
     void setFirstMove(int r, int c, int d)
     {
@@ -1177,11 +1185,11 @@ int main()
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
     //* rem switch
-     grid.getTestInput();
+     grid.getTestInput3();
      /*/
     grid.getInput();
     //*/
-    // logic.setFirstMove(1,2,bd_east);
+     logic.setFirstMove(4,2,bd_north);
     logic.setNextMove2(grid, nm);
     
     std::cout << nm.row << " ";
