@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 6;
+const int DaB_MINOR_VERSION = 8;
 
 #define BaR_SIZE 5
 
@@ -239,6 +239,16 @@ struct BaR_Grid
         b2[3][0].val |= bv_left;
         
     };
+    void getTestInput5()
+    {   
+        
+        
+        
+        b2[1][0].val |= bv_left;
+        b2[3][0].val |= bv_left;
+        
+    };
+    
     bool hasBestDirection(BaR_Box& b, int& dir)
     {
         int temp=0;
@@ -336,30 +346,56 @@ struct BaR_Grid
     bool canGoNorth(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.row == 0) return false;
-        else if(b2[bx.row-1][bx.col].isOpen()) return false;
-        abx = b2[bx.row-1][bx.col];
-        return true;
+        else if(b2[bx.row-1][bx.col].isOpen()) 
+        {
+            abx = b2[bx.row-1][bx.col];
+            return true;
+        }
+        return false;
     };
     bool canGoEast(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.col == BaR_SIZE-1) return false;
-        else if(b2[bx.row][bx.col+1].isOpen()) return false;
-        abx = b2[bx.row][bx.col+1];
-        return true;
+        else if(b2[bx.row][bx.col+1].isOpen()) 
+        {
+            abx = b2[bx.row][bx.col+1];
+            return true;
+        }
+        return false;
     };
     bool canGoSouth(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.row == BaR_SIZE-1) return false;
-        else if(b2[bx.row+1][bx.col].isOpen()) return false;
-        abx = b2[bx.row+1][bx.col];
-        return true;
+        else if(b2[bx.row+1][bx.col].isOpen()) 
+        {
+            abx = b2[bx.row+1][bx.col];
+            return true;
+        }
+        return false;
     };
     bool canGoWest(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.col == 0) return false;
-        else if(b2[bx.row][bx.col-1].isOpen()) return false;
-        abx = b2[bx.row][bx.col-1];
-        return true;
+        else if(b2[bx.row][bx.col-1].isOpen()) 
+        {
+            abx = b2[bx.row][bx.col-1];
+            return true;
+        }
+        return false;
+    };
+    int countRunID(int id)
+    {
+        int result = 0;
+        
+        for(int r=0; r<BaR_SIZE; ++r) 
+            for(int c=0; c<BaR_SIZE; ++c) 
+            {
+                if(b2[r][c].isOpen() && b2[r][c].runID == id) 
+                {
+                    ++result;
+                }
+            }
+        return result;
     };
     bool pathinDirection(BaR_Box& bx, int& dir)
     {
@@ -670,6 +706,14 @@ struct BaR_Pathfinder
                 }//  anywithoutID  check loop
         }
     };
+    void getBestMove(BaR_Grid& grid)
+    {
+        BaR_Boxes moves = BaR_Boxes();
+        init(grid);
+        moves.setMoves(grid);
+        
+        
+    };
 
 };
 
@@ -687,6 +731,7 @@ struct BaR_Logic
     {
         int o;
         BaR_Pathfinder pf;
+        pf.init(grid);
             
         
         for(o=0; o<moves.boxCount();++o)
@@ -711,34 +756,40 @@ struct BaR_Logic
             if(moves.box[o].lcount == 0)
             { b=moves.box[o]; return; }
         
-        std::vector<BaR_Boxes> arun;
+        //std::vector<BaR_Boxes> arun;
+        /// look for shortes run
+        int pathcount = 1, path[26],shortestpath=26, shortindex=0;
+ //       BaR_Boxes pathes[25];
         BaR_Boxes temp = BaR_Boxes();
-        pf.init(grid);
        
-        /*
-        int flag=0, c;
-        temp.setPath(grid, moves.box[0]);
-        arun.push_back(temp);
-        
+        //*
+     //   int flag=0, c;
+       // pathes[pathcount].setPath(grid, moves.box[0]);
+       // arun.push_back(temp);
+        while ((path[pathcount] = grid.countRunID(pathcount))) 
+        {
+            if(path[pathcount] < shortestpath) 
+            {
+                shortestpath = path[pathcount];
+                shortindex = pathcount;
+            }
+            ++pathcount;  
+        }
         for(o=1; o<moves.boxCount();++o)
         {
-            flag = 0;
-            for(int i=0; i<arun.size(); ++i) 
-                if(arun[i].contains(moves.box[o])) 
-                {i=arun.size(); ++flag;}
-            if(!flag)
+            if (moves.box[o].runID == shortindex) 
             {
-                temp.setPath(grid, moves.box[o]);
-                arun.push_back(temp);
+                b=moves.box[o]; return;
             }
-        }
-        c = arun[0].boxCount();
+         }
+        /*
         flag = 0;
         for(int i=1; i<arun.size(); ++i) 
             if(arun[i].boxCount() < c)
             {c=arun[i].boxCount(); flag = i;}
         b=arun[flag].box[0];
         //*/ 
+        std::clog << " move was not found"<<std::endl;
         return;
     };
     
@@ -758,7 +809,11 @@ struct BaR_Logic
         	{
                 return bd_south;
         	}
-        }
+        	else if(grid.b2[b.row+1][b.col].lcount == 2) 
+            {
+                
+            }
+       }
         if(b.eastOpen())
         {
          	if(b.lcount == 3 || b.col == BaR_SIZE-1)
@@ -817,8 +872,10 @@ struct BaR_Logic
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
-      //  else if(moves.box.size() == 25 && firstmoveisset)
-      //  	nm=firstMove;
+        else if(grid.total_lines < 2 && firstmoveisset)
+        {
+            nm=firstMove;
+        }
         else
         {
             getBestMoveBox(grid, tbox);
@@ -849,7 +906,7 @@ struct BaR_Logic
      //    std::cout << "Total with 3 Lines = " << moves3.boxCount() << std::endl;
          //*/
         
-        if (moves.boxCount() == 0) {std::cout<< "noMove";return;}//Game Over
+        if (moves.boxCount() == 0) {std::clog<< "noMove";return;}//Game Over
         // set Move poition
         else if(moves.boxCount() == 1) 
         {
@@ -857,7 +914,7 @@ struct BaR_Logic
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
-        else if(moves3.boxCount())//last line
+        else if(moves3.boxCount())//&&NoSacNeeded(grid)   //last line
         {
             tbox=moves3.box[0];
             nm.setMovePos(tbox.row, tbox.col);
@@ -872,9 +929,8 @@ struct BaR_Logic
           //  grid.calc_all_paths();
           //  tbox=data.BoB[data.getShortestPathIndex()].box[0];
             // ----- todo  ---------
-            BaR_Pathfinder pf;
-            pf.init(grid);
-            
+            // pf.getBestMove(grid);
+            getBestMoveBox(grid, tbox);
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
@@ -888,12 +944,25 @@ struct BaR_Logic
             }
             else
             {
-                grid.b2[tbox.row][tbox.col].val &= bv_taken;
+                grid.b2[tbox.row][tbox.col].val |= bv_taken;
+                grid.b2[tbox.row][tbox.col].pcount =0;
                 getBestMoveBox(grid, tbox);
                 nm.setMovePos(tbox.row, tbox.col);
                 nm.setMoveVal(getBestDirection(grid, tbox));
             }
             
+        }
+        if (nm.row == 0 && nm.col == 0 && nm.value == bd_south) 
+        {
+            for (int i=moves.boxCount()-1; i<=0; --i) 
+            {
+                if (!(nm.row == 0 && nm.col == 0 && nm.value == bd_south)) 
+                {
+                    nm.setMovePos(moves.box[i].row, moves.box[i].col);
+                    nm.setMoveVal(getBestDirection(grid, tbox));
+                }
+                
+            } 
         }
         
      //   if (data.BoB.size()>5) 
@@ -915,6 +984,20 @@ private:
 	bool firstmoveisset;
     next_move firstMove;
 };
+void getSelfInput(BaR_Grid& grid)
+{
+    
+};
+void playRound()
+{
+}
+
+void playAgainstSelf()
+{
+    BaR_Grid grid = BaR_Grid();
+    
+    
+};
 
 int main()
 {
@@ -922,22 +1005,24 @@ int main()
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
     //* rem switch
-     grid.getTestInput4();// input, input2, input3, input4
-     grid.print_grid();
-     /*/
-    grid.getInput();
-    //*/
-    logic.setFirstMove(2,2,bd_east);
+    // getSelfInput(grid);
+    grid.getTestInput();// input, input2, input3, input4
+    grid.print_grid();
+    /*/
+     grid.getInput();
+     //*/
+    logic.setFirstMove(4,2,bd_north);
     grid.calc();
     
-    logic.setNextMove3(grid, nm);
+    logic.setNextMove2(grid, nm);
     
-
+    
     
     std::cout << nm.row << " ";
     std::cout << nm.col << " ";
     std::cout << nm.value << std::endl;
-	
+    
+    	
     return 0;
 }
 
