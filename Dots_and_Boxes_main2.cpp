@@ -1145,10 +1145,10 @@ struct BaR_Logic
         // set Move poition
         else if (moves.box.size() == 1) 
             tbox=moves.box[0];
-    //    else if(grid && firstmoveisset)
+   //     else if(moves.box.size() == 25 && firstmoveisset)
    //     	nm=firstMove;
         else
-            getBestMoveBox(grid, tbox);// incriment firstmoveset??
+            getBestMoveBox(grid, tbox);
         
         if(!firstmoveisset || moves.box.size() != 25)
         {
@@ -1176,7 +1176,7 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    /* rem switch
+    //* rem switch
      grid.getTestInput();
      /*/
     grid.getInput();
