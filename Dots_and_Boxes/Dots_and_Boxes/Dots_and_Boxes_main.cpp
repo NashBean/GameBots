@@ -9,22 +9,40 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 5;
+const int DaB_MINOR_VERSION = 6;
 
 #define BaR_SIZE 5
 
 enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8,bv_taken=16,bv_path=32};
-enum Box_Direct {bd_north,bd_east,bd_south,bd_west,bd_any};
+enum Box_Direct {bd_north,bd_east,bd_south,bd_west,bd_any, bd_none};
+enum Path_Type {pt_Unknown, pt_ConEdge, pt_OinMiddle, pt_EdgetoEdge, pt_Corner, 
+    pt_1onEdge, pt_2onEdge, pt_3onEdge, pt_4onEdge};
+
+//   C on Edge      O in Middle    Edge to Edge        Corner
+//   _   _   _       _ _ _ _ _       _ _ _ _ _         _ _ _ _
+//  |_|     |_|     |_|_|_|_|_|     |_|_|_|_|_|      _|_|_|_|_|
+//  |_|_|_|_|_|     |_|  _  |_|     |_|_|_|_|_|     |_|_|_|_|_|
+//  |_|_|_|_|_|     |_| |_| |_|     |_|_|_|_|       |_|_|_|_|_|
+//  |_|_|_|_|_|     |_|_ _ _|_|     |  _ _ _ _|     |_|_|_|_|_|
+//  |_|_|_|_|_|     |_|_|_|_|_|     | |_|_|_|_|     |_|_|_|_|_|
+
+//   2 on Edge       3 on Edge       4 on Edge       1 on Edge
+//   _     _ _       _       _       _               _ _ _ _ _
+//  |_|_ _|_|_|     |_|_ _ _|_|     |_|_ _ _ _|     |_|_|_|_|_|
+//  |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_   _
+//  |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|
+//  |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|
+//  |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|
 
 
 struct BaR_Box 
 {
     int row, col;//row, colom
     int val, lcount, pcount;//value, line_count ,no_line_enum 
-    int runID;
+    int runID, runType;
     
     
-    BaR_Box():row(0),col(0),val(0),lcount(0),pcount(0),runID(0){};
+    BaR_Box():row(0),col(0),val(0),lcount(0),pcount(0),runID(0), runType(pt_Unknown){};
     ~BaR_Box(){};
     BaR_Box& operator =(const BaR_Box& b)
     {
@@ -221,7 +239,6 @@ struct BaR_Grid
         b2[3][0].val |= bv_left;
         
     };
-    
     bool hasBestDirection(BaR_Box& b, int& dir)
     {
         int temp=0;
@@ -315,7 +332,196 @@ struct BaR_Grid
         for(int	a=0; a<BaR_SIZE; ++a) 
         	for(int	b=0; b<BaR_SIZE; ++b) 
             	b2[a][b].val=0;
-    };   
+    };  
+    bool canGoNorth(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.row == 0) return false;
+        else if(b2[bx.row-1][bx.col].isOpen()) return false;
+        abx = b2[bx.row-1][bx.col];
+        return true;
+    };
+    bool canGoEast(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.col == BaR_SIZE-1) return false;
+        else if(b2[bx.row][bx.col+1].isOpen()) return false;
+        abx = b2[bx.row][bx.col+1];
+        return true;
+    };
+    bool canGoSouth(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.row == BaR_SIZE-1) return false;
+        else if(b2[bx.row+1][bx.col].isOpen()) return false;
+        abx = b2[bx.row+1][bx.col];
+        return true;
+    };
+    bool canGoWest(BaR_Box& bx, BaR_Box& abx)
+    {
+        if(bx.col == 0) return false;
+        else if(b2[bx.row][bx.col-1].isOpen()) return false;
+        abx = b2[bx.row][bx.col-1];
+        return true;
+    };
+    bool pathinDirection(BaR_Box& bx, int& dir)
+    {
+        if (bx.lcount != 2) return false;//bd_north,bd_east,bd_south,bd_west
+        BaR_Box tbox= BaR_Box();
+        
+        if(dir == bd_north)
+        {
+            if(bx.northOpen() && canGoNorth(bx, tbox)) 
+            { dir = bd_north; return true; }
+            if(bx.eastOpen() && canGoEast(bx, tbox)) 
+            { dir = bd_east; return true;}
+            if(bx.westOpen() && canGoWest(bx, tbox)) 
+            { dir = bd_west; return true; }
+        } 
+        else if(dir == bd_east)
+        {
+            if(bx.northOpen() && canGoNorth(bx, tbox)) 
+            { dir = bd_north; return true; }
+            if(bx.eastOpen() && canGoEast(bx, tbox)) 
+            { dir = bd_east; return true; }
+            if(bx.southOpen() && canGoSouth(bx, tbox)) 
+            { dir = bd_south; return true; }
+        } 
+        else if(dir == bd_south)
+        {
+            if(bx.westOpen() && canGoWest(bx, tbox)) 
+            { dir = bd_west; return true; }
+            if(bx.eastOpen() && canGoEast(bx, tbox)) 
+            { dir = bd_east; return true; }
+            if(bx.southOpen() && canGoSouth(bx, tbox)) 
+            { dir = bd_south; return true; }
+        } 
+        else if(dir == bd_west)
+        {
+            if(bx.westOpen() && canGoWest(bx, tbox)) 
+            { dir = bd_west; return true; }
+            if(bx.northOpen() && canGoNorth(bx, tbox)) 
+            { dir = bd_north; return true; }
+            if(bx.southOpen() && canGoSouth(bx, tbox)) 
+            { dir = bd_south; return true; }
+        } 
+        
+        return false;
+    };
+
+    void setPath(BaR_Box& sbox, int id)
+    {
+        if (b2[sbox.row][sbox.col].lcount != 2 || id<1) return;
+        b2[sbox.row][sbox.col].runID = id;
+        BaR_Box head = b2[sbox.row][sbox.col];
+        BaR_Box tail = b2[sbox.row][sbox.col];
+        bool headmoved = false;
+        int sdirect = bd_none, direct2 = bd_none;//chage to unknown
+        //bd_north,bd_east,bd_south,bd_west,bd_any,bd_none
+        int runtype = pt_Unknown;
+        //Path_Type {pt_Unknown, pt_ConEdge, pt_OinMiddle, pt_EdgetoEdge, pt_Corner, pt_2onEdge}
+        if(head.northOpen() && canGoNorth(tail, head)) 
+        { 
+            if(head.runID<1) 
+            {
+                head.runID = id;
+                sdirect = bd_north;
+                headmoved = true;
+            }
+         }
+        if(!headmoved && head.eastOpen() && canGoEast(tail, head)) 
+        { 
+            if(head.runID<1) 
+            {
+                head.runID = id;
+                sdirect = bd_east;
+                headmoved = true;
+            }
+        }
+        if(!headmoved && head.southOpen() && canGoSouth(tail, head)) 
+        { 
+            if(head.runID<1) 
+            {
+                head.runID = id;
+                sdirect = bd_south;
+                headmoved = true;
+            }
+        }
+        if(!headmoved && head.westOpen() && canGoWest(tail, head)) 
+        { 
+            if(head.runID<1) 
+            {
+                head.runID = id;
+                sdirect = bd_west;
+                headmoved = true;
+            }
+        }
+        if (!headmoved) return;
+        direct2 = sdirect; // save sdirect for tail
+        while (headmoved) // head loop
+        {                                      
+            if(!pathinDirection(head, direct2))  headmoved = false;
+            else
+            {
+                if(head.runID<1)
+                {
+                    head.runID = id;
+                }
+                else if(head.runID == id) // stops ifanant loop
+                {
+                    runtype = pt_OinMiddle;
+                    headmoved = false;
+                }
+                else
+                {       
+                    headmoved = false;
+                    std::clog << "2 runs crossed";
+                }
+
+            }
+        }
+        //todo add stop tail if runtype = OinMiddle
+        //else
+        if(runtype == pt_OinMiddle || runtype != pt_Corner)
+        {
+            setRunType(id, runtype);
+        }
+        else
+        {
+            headmoved = true; //reuse for tail
+            while (headmoved) // tail loop
+            {                                     
+                if(!pathinDirection(tail, sdirect))  headmoved = false;
+                else
+                {
+                    if(tail.runID<1)
+                    {
+                        tail.runID = id;
+                    }
+                    else if(tail.runID == id) 
+                    {
+                        headmoved = false;
+                    }
+                    else
+                    {       
+                        headmoved = false;
+                        std::clog << "2 runs crossed";
+                    }
+                    
+                }
+            }//tail loop
+        } 
+        return;
+    };
+private:
+    void setRunType(int id, int runtype)
+    {
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+            {
+                if(b2[r][c].runID == id)    
+                    b2[r][c].runType = runtype; 
+            }
+        
+    };
+
 };
 
 struct BaR_Boxes 
@@ -372,34 +578,6 @@ struct BaR_Boxes
     
     int boxCount(){return box.size();};
     
-    bool canGoNorth(BaR_Grid& grid, BaR_Box& bx, BaR_Box& abx)
-    {
-        if(bx.row == 0) return false;
-        else if(grid.b2[bx.row-1][bx.col].isOpen()) return false;
-        abx = grid.b2[bx.row-1][bx.col];
-        return true;
-    };
-    bool canGoEast(BaR_Grid& grid, BaR_Box& bx, BaR_Box& abx)
-    {
-        if(bx.col == BaR_SIZE-1) return false;
-        else if(grid.b2[bx.row][bx.col+1].isOpen()) return false;
-        abx = grid.b2[bx.row][bx.col+1];
-        return true;
-    };
-    bool canGoSouth(BaR_Grid& grid, BaR_Box& bx, BaR_Box& abx)
-    {
-        if(bx.row == BaR_SIZE-1) return false;
-        else if(grid.b2[bx.row+1][bx.col].isOpen()) return false;
-        abx = grid.b2[bx.row+1][bx.col];
-        return true;
-    };
-    bool canGoWest(BaR_Grid& grid, BaR_Box& bx, BaR_Box& abx)
-    {
-        if(bx.col == 0) return false;
-        else if(grid.b2[bx.row][bx.col-1].isOpen()) return false;
-        abx = grid.b2[bx.row][bx.col-1];
-        return true;
-    };
     
     void setGrid(BaR_Grid& grid)
     {
@@ -438,83 +616,61 @@ struct BaR_Boxes
                     box.push_back(tbox);
                 }
     };
+};
+
+struct BaR_Pathfinder 
+{
     
-   bool pathinDirection(BaR_Grid& grid,  BaR_Box& bx, int dir)
-    {
-        if (bx.lcount != 2) return false;//bd_north,bd_east,bd_south,bd_west
-        BaR_Box tbox= BaR_Box();
-        
-        if(dir == bd_north)
-        {
-            if(bx.northOpen() && canGoNorth(grid, bx, tbox)) 
-            { add(tbox); dir = bd_north; return true; }
-            if(bx.eastOpen() && canGoEast(grid, bx, tbox)) 
-            { add(tbox); dir = bd_east; return true;}
-            if(bx.westOpen() && canGoWest(grid, bx, tbox)) 
-            { add(tbox); dir = bd_west; return true; }
-        } 
-        else if(dir == bd_east)
-        {
-            if(bx.northOpen() && canGoNorth(grid, bx, tbox)) 
-            { add(tbox); dir = bd_north; return true; }
-            if(bx.eastOpen() && canGoEast(grid, bx, tbox)) 
-            { add(tbox); dir = bd_east; return true; }
-            if(bx.southOpen() && canGoSouth(grid, bx, tbox)) 
-            { add(tbox); dir = bd_south; return true; }
-        } 
-        else if(dir == bd_south)
-        {
-            if(bx.westOpen() && canGoWest(grid, bx, tbox)) 
-            { add(tbox); dir = bd_west; return true; }
-            if(bx.eastOpen() && canGoEast(grid, bx, tbox)) 
-            { add(tbox); dir = bd_east; return true; }
-            if(bx.southOpen() && canGoSouth(grid, bx, tbox)) 
-            { add(tbox); dir = bd_south; return true; }
-        } 
-        else if(dir == bd_west)
-        {
-            if(bx.westOpen() && canGoWest(grid, bx, tbox)) 
-            { add(tbox); dir = bd_west; return true; }
-            if(bx.northOpen() && canGoNorth(grid, bx, tbox)) 
-            { add(tbox); dir = bd_north; return true; }
-            if(bx.southOpen() && canGoSouth(grid, bx, tbox)) 
-            { add(tbox); dir = bd_south; return true; }
-        } 
-        
-        return false;
-    };
     
-    void setPath(BaR_Grid& grid, BaR_Box& bx)
+    void init(BaR_Grid& grid)
     {
-        BaR_Box tbox[2];
-        int direct[2];
-        int w = 0;
-        if(box.size()) box.clear();
-        add(bx);
-        if (bx.lcount != 2) return;//bd_north,bd_east,bd_south,bd_west
-        if (bx.northOpen() && canGoNorth(grid, bx, tbox[w])) 
-        { add(tbox[w]); direct[w] = bd_north; ++w; }
-        if (bx.eastOpen() && canGoEast(grid, bx, tbox[w])) 
-        { add(tbox[w]); direct[w] = bd_east; ++w;}
-        if (bx.southOpen() && canGoSouth(grid, bx, tbox[w])) 
-        { add(tbox[w]); direct[w] = bd_south; ++w;}
-        if (bx.westOpen() && canGoWest(grid, bx, tbox[w])) 
-        { add(tbox[w]); direct[w] = bd_west; ++w; }
-        if(w==0) return;
+        bool anywithoutID=0;
+        int pathcount=0;
+        BaR_Box tbox = BaR_Box();
         
-        for(int i=0; i<25; ++i) 
-            if (!pathinDirection(grid, tbox[0], direct[0]))   break;
-        //        while(pathinDirect(grid,  tbox[0], direct[0]));
-        if(w>1)
-            for(int i=0; i<25; ++i) 
-                if (!pathinDirection(grid, tbox[1], direct[1]))   break;
-        //            while(pathinDirect(grid, tbox[1], direct[1]));
-        return;
+        //  anywithoutID  check loop and set pathcount
+        for(int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+            {
+                if((grid.b2[r][c].lcount == 2 && grid.b2[r][c].runID < 1)) 
+                {   
+                    anywithoutID = true;
+                }
+                else if(grid.b2[r][c].lcount == 2 && grid.b2[r][c].runID > 0)
+                {
+                    if(grid.b2[r][c].runID > pathcount) pathcount = grid.b2[r][c].runID;
+                }
+            }//  anywithoutID  check loop
+
+        while(anywithoutID) 
+        {
+            anywithoutID = false;
+            //  anywithoutID  check loop
+            for(int r=0; r<BaR_SIZE; ++r) 
+                for (int c=0; c<BaR_SIZE; ++c) 
+                {
+                    if((grid.b2[r][c].lcount == 2 && grid.b2[r][c].runID < 1)) 
+                    {   
+                        anywithoutID = true;
+                        ++pathcount;
+                        grid.b2[r][c].runID = pathcount;
+                        grid.setPath(grid.b2[r][c], pathcount);
+                    }
+                }//  anywithoutID  check loop
+            
+            
+            //  anywithoutID  check loop without else if
+            for(int r=0; r<BaR_SIZE; ++r) 
+                for (int c=0; c<BaR_SIZE; ++c) 
+                {
+                    if((grid.b2[r][c].lcount == 2 && grid.b2[r][c].runID < 1)) 
+                    {   
+                        anywithoutID = true;
+                    }
+                }//  anywithoutID  check loop
+        }
     };
-    void print_boxes()
-    {
-        
-    };
+
 };
 
 
@@ -530,6 +686,8 @@ struct BaR_Logic
     void getBestMoveBox(BaR_Grid& grid, BaR_Box& b)
     {
         int o;
+        BaR_Pathfinder pf;
+            
         
         for(o=0; o<moves.boxCount();++o)
         {
@@ -555,8 +713,10 @@ struct BaR_Logic
         
         std::vector<BaR_Boxes> arun;
         BaR_Boxes temp = BaR_Boxes();
+        pf.init(grid);
+       
+        /*
         int flag=0, c;
-        
         temp.setPath(grid, moves.box[0]);
         arun.push_back(temp);
         
@@ -578,6 +738,7 @@ struct BaR_Logic
             if(arun[i].boxCount() < c)
             {c=arun[i].boxCount(); flag = i;}
         b=arun[flag].box[0];
+        //*/ 
         return;
     };
     
@@ -711,6 +872,9 @@ struct BaR_Logic
           //  grid.calc_all_paths();
           //  tbox=data.BoB[data.getShortestPathIndex()].box[0];
             // ----- todo  ---------
+            BaR_Pathfinder pf;
+            pf.init(grid);
+            
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
@@ -757,8 +921,8 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    /* rem switch
-     grid.getTestInput();
+    //* rem switch
+     grid.getTestInput4();// input, input2, input3, input4
      grid.print_grid();
      /*/
     grid.getInput();
