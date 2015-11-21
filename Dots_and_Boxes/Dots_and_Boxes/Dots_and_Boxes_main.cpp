@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 11;
+const int DaB_MINOR_VERSION = 12;
 
 #define BaR_SIZE 5
 
@@ -176,16 +176,15 @@ struct BaR_Grid
         total_lines=0;
         int r,c;
         for (r=0; r<BaR_SIZE; ++r) 
-            if (b2[r][c].northOpen()) ++lines;
+            if (b2[r][c].northOpen()) ++total_lines;
  
         for (r=0; r<BaR_SIZE; ++r) 
             for (c=0; c<BaR_SIZE; ++c) 
             {
-                if (c == 0 && b2[r][c].northOpen()) ++lines;
-                if (b2[r][c].eastOpen()) ++lines;
-                if (b2[r][c].southOpen()) ++lines;
+                if (c == 0 && b2[r][c].westOpen()) ++total_lines;
+                if (b2[r][c].eastOpen()) ++total_lines;
+                if (b2[r][c].southOpen()) ++total_lines;
             }
-        
     };
     
     void getInput()
