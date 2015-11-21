@@ -6,7 +6,7 @@ Isola problem page: https:
 //www.hackerearth.com/problem/multiplayer/isola/
 
 Still Live Chalenge!
-Only one day left! 
+Less then one day left! 
 Dots and Boxes problem page: 
 https://www.hackerearth.com/battle-of-bots-2/multiplayer/dots-and-boxes/
 
