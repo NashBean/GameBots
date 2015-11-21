@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 8;
+const int DaB_MINOR_VERSION = 9;
 
 #define BaR_SIZE 5
 
@@ -177,7 +177,7 @@ struct BaR_Grid
         std::cin >> player;
     };
     void getTestInput()
-    {   
+    {   //***todo*** bug in this function *****************************************
         int r,c;
         for (r=0; r<BaR_SIZE; ++r) 
             for (c=0; c<BaR_SIZE; ++c) 
@@ -346,42 +346,31 @@ struct BaR_Grid
     bool canGoNorth(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.row == 0) return false;
-        else if(b2[bx.row-1][bx.col].isOpen()) 
-        {
+        else if(b2[bx.row-1][bx.col].isOpen()) return false;
             abx = b2[bx.row-1][bx.col];
             return true;
-        }
-        return false;
+        
     };
     bool canGoEast(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.col == BaR_SIZE-1) return false;
-        else if(b2[bx.row][bx.col+1].isOpen()) 
-        {
-            abx = b2[bx.row][bx.col+1];
-            return true;
-        }
-        return false;
+        else if(b2[bx.row][bx.col+1].isOpen()) return false;
+        abx = b2[bx.row][bx.col+1];
+        return true;
     };
     bool canGoSouth(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.row == BaR_SIZE-1) return false;
-        else if(b2[bx.row+1][bx.col].isOpen()) 
-        {
+        else if(b2[bx.row+1][bx.col].isOpen()) return false;
             abx = b2[bx.row+1][bx.col];
             return true;
-        }
-        return false;
     };
     bool canGoWest(BaR_Box& bx, BaR_Box& abx)
     {
         if(bx.col == 0) return false;
-        else if(b2[bx.row][bx.col-1].isOpen()) 
-        {
+        else if(b2[bx.row][bx.col-1].isOpen())return false; 
             abx = b2[bx.row][bx.col-1];
             return true;
-        }
-        return false;
     };
     int countRunID(int id)
     {
@@ -657,7 +646,7 @@ struct BaR_Boxes
 struct BaR_Pathfinder 
 {
     
-    
+    // ***todo*** there is bug in this function *****************************
     void init(BaR_Grid& grid)
     {
         bool anywithoutID=0;
