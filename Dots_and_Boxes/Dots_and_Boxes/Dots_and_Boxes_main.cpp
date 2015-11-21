@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 9;
+const int DaB_MINOR_VERSION = 10;
 
 #define BaR_SIZE 5
 
@@ -34,6 +34,16 @@ enum Path_Type {pt_Unknown, pt_ConEdge, pt_OinMiddle, pt_EdgetoEdge, pt_Corner,
 //  |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|
 //  |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|     |_|_|_|_|_|
 
+int getOpDir(int bd)
+{
+    if(bd == bd_north) return bd_south;
+    else if(bd == bd_east) return bd_west; 
+    else if(bd == bd_south) return bd_north; 
+    else if(bd == bd_west) return bd_east; 
+    //else if(bd == bd_any) return bd_none;
+    //else if(bd == bd_none) return bd_any;
+    return bd_none;
+};
 
 struct BaR_Box 
 {
@@ -77,11 +87,13 @@ struct BaR_Box
         calcLineCount();
         if (lcount == 4) 
         {
+            if(!(val & bv_taken)) 
             val |= bv_taken;
         }
         else if(lcount == 2) 
         {
-            val |= bv_path;
+            if(!(val & bv_path)) 
+                val |= bv_path;
             runID = 0;
         }
         else
@@ -89,15 +101,15 @@ struct BaR_Box
     };
     bool isOpen()
     {
-        return  (pcount);
+        return (lcount < 4);
     };
     bool isPath()
     {
-        return  (val & bv_path);
+        return  (lcount == 2);
     };
     bool isTaken()
     {
-        return  (val & bv_taken);
+        return  (lcount == 4);
     };
     bool northOpen()
     {
@@ -115,13 +127,23 @@ struct BaR_Box
     {
         return !(val & bv_left);
     };
+    bool isDirOpen(int bd)
+    {
+        if(bd == bd_north) return northOpen();
+        else if(bd == bd_east) return eastOpen(); 
+        else if(bd == bd_south) return southOpen(); 
+        else if(bd == bd_west) return westOpen(); 
+        else if(bd == bd_any) return (northOpen()||eastOpen()||southOpen()||westOpen());
+        
+        return false;  
+    };
 };
 
 struct next_move 
 {
-    int row, col, value;
+    int row, col, dir;
     
-    next_move():row(0), col(0), value(0){};
+    next_move():row(0), col(0), dir(0){};
     ~next_move(){};
     
     void setMovePos(int r, int c)
@@ -136,7 +158,7 @@ struct next_move
     };
     void setMoveVal(int v)
     {
-        value = v;
+        dir = v;
     };
 };
 
@@ -176,10 +198,24 @@ struct BaR_Grid
             }
         std::cin >> player;
     };
+    
+    void addMove(next_move& nm)
+    {
+        if((b2[nm.row][nm.col].isDirOpen(nm.dir)))
+           {
+               b2[nm.row][nm.col].val |= nm.dir;
+           }
+        if ((b2[nm.row-1][nm.col].isDirOpen(getOpDir(nm.dir)))) //change to opiset dir
+        {
+            b2[nm.row-1][nm.col].val |= getOpDir(nm.dir);// change to opiset dir
+           
+        }
+    };
+    
     void getTestInput()
-    {   //***todo*** bug in this function *****************************************
+    {   
         int r,c;
-        for (r=0; r<BaR_SIZE; ++r) 
+         for (r=0; r<BaR_SIZE; ++r) 
             for (c=0; c<BaR_SIZE; ++c) 
             {
                 b2[r][c].setPos(r, c);
@@ -187,7 +223,7 @@ struct BaR_Grid
             }
         player = 1;
     };
-    void getTestInput2()
+    void getTestInput2()// nomove left
     {   
         int r,c;
         for (r=0; r<BaR_SIZE; ++r) 
@@ -201,51 +237,56 @@ struct BaR_Grid
     void getTestInput3()
     {   
         int r,c,a=1;
+        next_move tmove = next_move();
         for (r=0; r<BaR_SIZE; ++r) 
             for (c=0; c<BaR_SIZE; ++c) 
             {
                 if (a == 1) 
                 {
-                    b2[r][c].setPos(r, c);
-                    b2[r][c].setMoveVal(bv_left | bv_top);
+                    tmove.setMovePos(r, c);
+                    tmove.setMoveVal(bd_north);
+                    addMove(tmove);
+                    tmove.setMoveVal(bd_west);
+                    addMove(tmove);
                     ++a;
                 }
                 if (a == 2) 
                 {
-                    b2[r][c].setPos(r, c);
-                    b2[r][c].setMoveVal(bv_top | bv_right);
+                    tmove.setMovePos(r, c);
+                    tmove.setMoveVal(bd_north);
+                    addMove(tmove);
                       a = 0;
                 }
                 else
                 {
-                    b2[r][c].setPos(r, c);
-                    b2[r][c].setMoveVal(bv_bottem);
+                    tmove.setMovePos(r, c);
+                    tmove.setMoveVal(bd_west);
                     ++a;
                 }
-               // b2[0][1].val |= bv_top;
-               // b2[0][1].val |= bv_right;
-               // b2[0][1].val |= bv_left;
-                //b2[0][1].val |= bv_left;
-                
             }
         player = 1;
     };
     void getTestInput4()
     {   
         getTestInput3();
+        next_move amove = next_move();
         
-        
-        b2[1][0].val |= bv_left;
-        b2[3][0].val |= bv_left;
+        amove.setMovePos(1, 0);
+        amove.setMoveVal(bd_west);
+        addMove(amove);
+        amove.setMovePos(3, 0);
+        addMove(amove);
         
     };
     void getTestInput5()
     {   
+        next_move amove = next_move();
         
-        
-        
-        b2[1][0].val |= bv_left;
-        b2[3][0].val |= bv_left;
+        amove.setMovePos(1, 0);
+        amove.setMoveVal(bd_west);
+        addMove(amove);
+        amove.setMovePos(3, 0);
+        addMove(amove);
         
     };
     
@@ -941,11 +982,11 @@ struct BaR_Logic
             }
             
         }
-        if (nm.row == 0 && nm.col == 0 && nm.value == bd_south) 
+        if (nm.row == 0 && nm.col == 0 && nm.dir == bd_south) 
         {
             for (int i=moves.boxCount()-1; i<=0; --i) 
             {
-                if (!(nm.row == 0 && nm.col == 0 && nm.value == bd_south)) 
+                if (!(nm.row == 0 && nm.col == 0 && nm.dir == bd_south)) 
                 {
                     nm.setMovePos(moves.box[i].row, moves.box[i].col);
                     nm.setMoveVal(getBestDirection(grid, tbox));
@@ -965,7 +1006,7 @@ struct BaR_Logic
     	//enum Box_Direct {bd_north,bd_east,bd_south,bd_west};
 		firstMove.row = r;
 		firstMove.col = c;
-		firstMove.value = d;
+		firstMove.dir = d;
 		firstmoveisset = true;
     };
 
@@ -993,9 +1034,9 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    //* rem switch
-    // getSelfInput(grid);
-    grid.getTestInput();// input, input2, input3, input4
+    /* rem switch
+    getSelfInput(grid);
+    grid.getTestInput1();// input, input2, input3, input4
     grid.print_grid();
     /*/
      grid.getInput();
@@ -1009,7 +1050,7 @@ int main()
     
     std::cout << nm.row << " ";
     std::cout << nm.col << " ";
-    std::cout << nm.value << std::endl;
+    std::cout << nm.dir << std::endl;
     
     	
     return 0;
