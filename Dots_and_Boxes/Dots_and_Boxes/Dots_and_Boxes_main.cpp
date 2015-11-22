@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 4;
-const int DaB_MINOR_VERSION = 5;
+const int DaB_MINOR_VERSION = 6;
 
 #define BaR_SIZE 5
 
@@ -213,8 +213,8 @@ struct BaR_Grid
     // ***todo*** there is bug in this function *****************************
     void initpathfinder()
     {
-        bool anywithoutID=0;
-        int pathcount=0;
+        bool anywithoutID=false;
+        int pathcount=1;//first path has to be > 0
         BaR_Box tbox = BaR_Box();
         
         //  anywithoutID  check loop and set pathcount
@@ -876,6 +876,33 @@ struct BaR_Logic
         for(o=0; o<moves.boxCount();++o)
             if(moves.box[o].lcount == 3)
             { b=moves.box[o]; return; }
+        // check for open corners
+        //*
+         for(o=0; o<moves.boxCount();++o)
+         {
+         if (moves.box[o].row == 0 && moves.box[o].col == BaR_SIZE-1) 
+         {
+             if(moves.box[o].lcount < 2)
+                 b=moves.box[o]; return;
+         }
+         if (moves.box[o].row == BaR_SIZE-1 && moves.box[o].col == BaR_SIZE-1) 
+         {
+             if(moves.box[o].lcount < 2)
+                 b=moves.box[o]; return;
+         }
+         if (moves.box[o].row == BaR_SIZE-1 && moves.box[o].col == 0) 
+         {
+             if(moves.box[o].lcount < 2)
+                 b=moves.box[o]; return;
+         }
+         if (moves.box[o].row == 0 && moves.box[o].col == 0) 
+         {
+             if(moves.box[o].lcount < 2)
+                 b=moves.box[o]; return;
+         }
+         }//*/
+        
+        
         for(o=0; o<moves.boxCount();++o)
             if(moves.box[o].lcount == 1)
             { b=moves.box[o]; return; }
@@ -1312,7 +1339,7 @@ struct BaR_Logic
         }
         
         int tdir;
-        //*  for debugging only
+        /*  for debugging only
         std::cout << "Total Lines = " << grid.total_lines << std::endl;
         std::cout << "Total Boxes = " << totalmoves << std::endl;
         for (int i=0; i<5; ++i) 
@@ -1349,7 +1376,7 @@ struct BaR_Logic
             // ----- todo  ---------
             // pf.getBestMove(grid);
             //&&NoSacNeeded(grid)  
-            getBestMoveBox2(grid, tbox);
+            getBestMoveBox(grid, tbox);
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection2(grid, tbox));
         }
@@ -1415,16 +1442,6 @@ private:
     next_move firstMove;
 };
 
-void getSelfInput(BaR_Grid& grid){};
-void playRound(){};
-
-void playAgainstSelf()
-{
-    BaR_Grid grid = BaR_Grid();
-    
-    
-};
-
 int main()
 {
     BaR_Grid grid = BaR_Grid();
@@ -1432,14 +1449,14 @@ int main()
     next_move nm = next_move();
     /* rem switch
     getSelfInput(grid);
-    grid.getTestInput2();// input, input2, input3, input4
+    grid.getTestInput();// input, input2, input3, input4
     grid.print_grid();
     /*/
      grid.getInput();
      //*/
     logic.setFirstMove(4,2,bd_north);
     
-    logic.setNextMove2(grid, nm);
+    logic.setNextMove4(grid, nm);
     
     
     
