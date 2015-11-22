@@ -8,8 +8,8 @@
 #include <iostream>
 #include <vector>
 
-const int DaB_MAJOR_VERSION = 3;
-const int DaB_MINOR_VERSION = 14;
+const int DaB_MAJOR_VERSION = 4;
+const int DaB_MINOR_VERSION = 1;
 
 #define BaR_SIZE 5
 
@@ -812,27 +812,22 @@ struct BaR_Logic
     {
         int o;
         
-        for(o=0; o<moves.boxCount();++o)
-        {
-            if(moves.box[o].lcount == 3)
-            { b=moves.box[o]; return; }
-            //testing
-            /*
-            std::cout << moves.box[o].row << " ";
-            std::cout << moves.box[o].col << " ";
-            std::cout << moves.box[o].val << " ";
-            if (moves.box[o].val<10) 
-                std::cout << " ";
-            std::cout << moves.box[o].lcount << " ";
-            std::cout << moves.box[o].pcount << std::endl;
-             //*/
-        }
-        for(o=0; o<moves.boxCount();++o)
-            if(moves.box[o].lcount == 1)
-            { b=moves.box[o]; return; }
-        for(o=0; o<moves.boxCount();++o)
-            if(moves.box[o].lcount == 0)
-            { b=moves.box[o]; return; }
+        
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+                if(grid.lCount[r][c] == 3)
+                { b.setPos(r, c);b.setVal(grid.boxV[r][c]); return; }
+        
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+                if(grid.lCount[r][c] == 1)
+                { b.setPos(r, c);b.setVal(grid.boxV[r][c]); return; }
+        
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+                if(grid.lCount[r][c] == 0)
+                { b.setPos(r, c);b.setVal(grid.boxV[r][c]); return; }
+
         
         //std::vector<BaR_Boxes> arun;
         /// look for shortes run
@@ -855,20 +850,18 @@ struct BaR_Logic
             }
             ++pathcount;  
         }
-        for(o=1; o<moves.boxCount();++o)
-        {
-            if (grid.pID[moves.box[o].row][moves.box[o].col] == shortindex) 
-            {
-                b=moves.box[o]; return;
-            }
-         }
-        /*
-        flag = 0;
-        for(int i=1; i<arun.size(); ++i) 
-            if(arun[i].boxCount() < c)
-            {c=arun[i].boxCount(); flag = i;}
-        b=arun[flag].box[0];
-        //*/ 
+        // sortest path loop
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+                if(grid.pID[r][c] == shortindex)
+                { b.setPos(r, c);b.setVal(grid.boxV[r][c]); return; }
+        
+        // no other anser loop
+        for (int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+                if(grid.lCount[r][c] < 4)
+                { b.setPos(r, c);b.setVal(grid.boxV[r][c]); return; }
+        
         std::clog << " move was not found"<<std::endl;
         return;
     };
@@ -889,10 +882,6 @@ struct BaR_Logic
         	{
                 return bd_south;
         	}
-        	else if(grid.lCount[b.row+1][b.col] == 2) 
-            {
-                
-            }
        }
         if(b.eastOpen())
         {
@@ -929,7 +918,8 @@ struct BaR_Logic
         }
         
         // add more logic
-       
+        // ***todo***
+       // hide this box and look for another move box
         if(b.southOpen())
             return bd_south;
         else if(b.eastOpen())
@@ -1188,7 +1178,7 @@ int main()
      //*/
     logic.setFirstMove(4,2,bd_north);
     
-    logic.setNextMove4(grid, nm);
+    logic.setNextMove3(grid, nm);
     
     
     
