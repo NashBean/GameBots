@@ -1,6 +1,7 @@
 # GameBots
 Game Bots that play against other Bots Online.
 Written in C++, Coded by: Nash Bean
+https://ibeansoftware.hipchat.com/chat/room/2175280
 
 Isola problem page: https:
 //www.hackerearth.com/problem/multiplayer/isola/
