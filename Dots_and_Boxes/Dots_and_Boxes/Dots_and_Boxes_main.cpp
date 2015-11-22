@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 4;
-const int DaB_MINOR_VERSION = 2;
+const int DaB_MINOR_VERSION = 3;
 
 #define BaR_SIZE 5
 
@@ -356,8 +356,8 @@ struct BaR_Grid
     
     bool hasBestDirection(BaR_Box& b, int& dir)
     {
-        int temp=0;
-        temp = b.val;
+        //int temp=0;
+       // temp = b.val;
         BaR_Box tb = BaR_Box();
         
         if(b.westOpen())
@@ -974,7 +974,8 @@ struct BaR_Logic
     
     void setNextMove2(BaR_Grid& grid, next_move& nm)
     {
-        int tdir=bd_none;
+        int tdir=bd_none,mCount=0;
+        
         moves.setMoves(grid);
         BaR_Box tbox = BaR_Box(); // temp box
         if (moves.box.size() == 0) {std::clog<< "noMove"<<std::endl;return;}//Game Over
@@ -1012,7 +1013,7 @@ struct BaR_Logic
                 
             }
            
-            nm.setMoveVal(getBestDirection(grid, tbox));
+            nm.setMoveVal(tdir);
         }
     }; 
     
@@ -1229,7 +1230,7 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    //* rem switch
+    /* rem switch
     getSelfInput(grid);
     grid.getTestInput2();// input, input2, input3, input4
     grid.print_grid();
@@ -1238,7 +1239,7 @@ int main()
      //*/
     logic.setFirstMove(4,2,bd_north);
     
-    logic.setNextMove3(grid, nm);
+    logic.setNextMove2(grid, nm);
     
     
     
