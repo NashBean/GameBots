@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 4;
-const int DaB_MINOR_VERSION = 3;
+const int DaB_MINOR_VERSION = 4;
 
 #define BaR_SIZE 5
 
@@ -197,6 +197,16 @@ struct BaR_Grid
                 if (boxV[r][c] & bv_right) ++total_lines;
                 if (boxV[r][c] & bv_bottem) ++total_lines;
             }
+        
+        for (r=0; r<BaR_SIZE; ++r) 
+            for (c=0; c<BaR_SIZE; ++c) 
+            {
+                BaR_Box tbox = BaR_Box();
+                tbox.setPos(r, c);
+                tbox.setVal(boxV[r][c]);
+                lCount[r][c] = tbox.lcount;
+            }
+        
         initpathfinder();
     };
     
@@ -848,8 +858,198 @@ struct BaR_Logic
     {firstmoveisset=false;};
     ~BaR_Logic()
     {};
-    
+   // v2.7 
+    int getOptions(int v)
+    {
+        int result=0;
+        if(v & bv_top) ++result;
+        if(v & bv_right) ++result;
+        if(v & bv_bottem) ++result;
+        if(v & bv_left) ++result;
+        return result;
+    };
+
     void getBestMoveBox(BaR_Grid& grid, BaR_Box& b)
+    {
+        int o;
+        
+        for(o=0; o<moves.boxCount();++o)
+            if(moves.box[o].lcount == 3)
+            { b=moves.box[o]; return; }
+        for(o=0; o<moves.boxCount();++o)
+            if(moves.box[o].lcount == 1)
+            { b=moves.box[o]; return; }
+        for(o=0; o<moves.boxCount();++o)
+            if(moves.box[o].lcount == 0)
+            { b=moves.box[o]; return; }
+        
+        // check for open corners
+        /*
+        for(o=0; o<moves.boxCount();++o)
+        {
+            if (moves.box[o].row == 0 && moves.box[o].col == BaR_SIZE-1) 
+            {
+                b=moves.box[o]; return;
+            }
+            if (moves.box[o].row == BaR_SIZE-1 && moves.box[o].col == BaR_SIZE-1) 
+            {
+                b=moves.box[o]; return;
+            }
+            if (moves.box[o].row == BaR_SIZE-1 && moves.box[o].col == 0) 
+            {
+                b=moves.box[o]; return;
+            }
+            if (moves.box[o].row == 0 && moves.box[o].col == 0) 
+            {
+                b=moves.box[o]; return;
+            }
+        }//*/
+        
+        int tint=0, lowest=25, loopstop=0;
+        int pcount[20];
+        for(o=0; o<moves.boxCount();++o)
+        {
+            if(moves.box[o].lcount == 2)
+            {
+                tint = grid.pID[moves.box[o].row][moves.box[o].col];
+                ++pcount[tint];
+            }
+       }        
+        loopstop = tint+1;
+        tint=0;
+        for(o=1; o<loopstop;++o)
+        {
+            if(moves.box[o].lcount == 2 && 
+               pcount[grid.pID[moves.box[o].row][moves.box[o].col]] < lowest)
+            {
+                tint = o;
+                lowest = pcount[grid.pID[moves.box[o].row][moves.box[o].col]];
+                
+            }
+        }        
+        b=moves.box[tint]; 
+        return;
+        /* *todo* is grid counting lines
+        std::vector<BaR_Boxes> arun;
+        BaR_Boxes temp = BaR_Boxes();
+        int flag=0, c;
+        
+        temp.setPath(grid, moves.box[0]);
+        arun.push_back(temp);
+        
+        for(o=1; o<moves.boxCount();++o)
+        {
+            flag = 0;
+            for(int i=0; i<arun.size(); ++i) 
+                if(arun[i].contains(moves.box[o])) 
+                {i=arun.size(); ++flag;}
+            if(!flag)
+            {
+                temp.setPath(grid, moves.box[o]);
+                arun.push_back(temp);
+            }
+        }
+        c = arun[0].boxCount();
+        flag = 0;
+        for(int i=1; i<arun.size(); ++i) 
+            if(arun[i].boxCount() < c)
+            {c=arun[i].boxCount(); flag = i;}
+        b=arun[flag].box[0];
+        //*/
+        return;
+    };
+    
+    int getBestDirection(BaR_Grid& grid, BaR_Box& b)
+    {
+        
+        int temp=0;
+        temp = b.val;
+        
+        if(b.eastOpen())
+        {
+            if(b.lcount == 3 || b.col == BaR_SIZE-1)
+            {
+                return bd_east;
+            }
+            else if(getOptions(grid.boxV[b.row][b.col+1]) != 2) 
+            {
+                return bd_east;
+            }
+        }
+        if(b.southOpen())
+        {
+            if(b.lcount == 3 || b.row == BaR_SIZE-1)
+            {
+                return bd_south;
+            }
+            else if(getOptions(grid.boxV[b.row+1][b.col]) != 2) 
+            {
+                return bd_south;
+            }
+        }
+        if(b.westOpen())
+        {
+            if(b.lcount == 3 || b.col == 0)
+            {
+                return bd_west;
+            }
+            else if(getOptions(grid.boxV[b.row][b.col-1]) != 2) 
+            {
+                return bd_west;
+            }
+        }
+        if(b.northOpen())
+        {
+            if(b.lcount == 3 || b.row == 0)
+            {
+                return bd_north;
+            }
+            else if(getOptions(grid.boxV[b.row-1][b.col]) != 2) 
+            {
+                return bd_north;
+            }
+        }
+        
+        // add more logic
+        if(b.southOpen())
+            return bd_south;
+        else if(b.eastOpen())
+            return bd_east;
+        else if(b.northOpen())
+            return bd_north;
+        //	else if(b.northOpen())
+        return bd_west;
+    };
+    
+    void setNextMove(BaR_Grid& grid, next_move& nm)
+    {
+        moves.setMoves(grid);
+        BaR_Box tbox = BaR_Box(); // temp box
+        if (moves.box.size() == 0) {std::cout<< "noMove";return;}//Game Over
+        // set Move poition
+        else if (moves.box.size() == 1) 
+        {
+            tbox=moves.box[0];
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        else if(grid.total_lines < 2 && firstmoveisset)
+        {
+            nm=firstMove;
+        }
+        else
+        {
+            getBestMoveBox(grid, tbox);
+            nm.setMovePos(tbox.row, tbox.col);
+            nm.setMoveVal(getBestDirection(grid, tbox));
+        }
+        
+        
+    };   
+
+    
+  //   v2.7 above  
+    void getBestMoveBox2(BaR_Grid& grid, BaR_Box& b)
     {
         
         for (int r=0; r<BaR_SIZE; ++r) 
@@ -905,7 +1105,7 @@ struct BaR_Logic
         return;
     };
     
-    int getBestDirection(BaR_Grid& grid, BaR_Box& b)
+    int getBestDirection2(BaR_Grid& grid, BaR_Box& b)
     {
         
         int tdir=0;
@@ -974,7 +1174,7 @@ struct BaR_Logic
     
     void setNextMove2(BaR_Grid& grid, next_move& nm)
     {
-        int tdir=bd_none,mCount=0;
+        int tdir=bd_none;//,mCount=0;
         
         moves.setMoves(grid);
         BaR_Box tbox = BaR_Box(); // temp box
@@ -1002,7 +1202,7 @@ struct BaR_Logic
         else
         {
           
-            getBestMoveBox(grid, tbox);
+            getBestMoveBox2(grid, tbox);
             nm.setMovePos(tbox.row, tbox.col);
             if(!grid.hasBestDirection(tbox, tdir)) 
             {
@@ -1043,13 +1243,13 @@ struct BaR_Logic
         {
             tbox=moves.box[0];
             nm.setMovePos(tbox.row, tbox.col);
-            nm.setMoveVal(getBestDirection(grid, tbox));
+            nm.setMoveVal(getBestDirection2(grid, tbox));
         }
         else if(moves3.boxCount())//&&NoSacNeeded(grid)   //last line
         {
             tbox=moves3.box[0];
             nm.setMovePos(tbox.row, tbox.col);
-            nm.setMoveVal(getBestDirection(grid, tbox));
+            nm.setMoveVal(getBestDirection2(grid, tbox));
         }
         else if(grid.total_lines < 2 && firstmoveisset)
         {
@@ -1061,13 +1261,13 @@ struct BaR_Logic
           //  tbox=data.BoB[data.getShortestPathIndex()].box[0];
             // ----- todo  ---------
             // pf.getBestMove(grid);
-            getBestMoveBox(grid, tbox);
+            getBestMoveBox2(grid, tbox);
             nm.setMovePos(tbox.row, tbox.col);
-            nm.setMoveVal(getBestDirection(grid, tbox));
+            nm.setMoveVal(getBestDirection2(grid, tbox));
         }
         else
         {
-            getBestMoveBox(grid, tbox);
+            getBestMoveBox2(grid, tbox);
             if(grid.hasBestDirection(tbox, tdir)) 
             {
                 nm.setMovePos(tbox.row, tbox.col);
@@ -1077,9 +1277,9 @@ struct BaR_Logic
             {
                 grid.lCount[tbox.row][tbox.col] = 4;
                // grid.b2[tbox.row][tbox.col].pcount =0;
-                getBestMoveBox(grid, tbox);
+                getBestMoveBox2(grid, tbox);
                 nm.setMovePos(tbox.row, tbox.col);
-                nm.setMoveVal(getBestDirection(grid, tbox));
+                nm.setMoveVal(getBestDirection2(grid, tbox));
             }
             
         }
@@ -1090,7 +1290,7 @@ struct BaR_Logic
                 if (!(nm.row == 0 && nm.col == 0 && nm.dir == bd_south)) 
                 {
                     nm.setMovePos(moves.box[i].row, moves.box[i].col);
-                    nm.setMoveVal(getBestDirection(grid, tbox));
+                    nm.setMoveVal(getBestDirection2(grid, tbox));
                 }
                 
             } 
@@ -1135,7 +1335,7 @@ struct BaR_Logic
                             tbox.setPos(r, c);
                             tbox.setVal(grid.boxV[r][c]);
                             nm.setMovePos(r, c);
-                            nm.setMoveVal(getBestDirection(grid, tbox));
+                            nm.setMoveVal(getBestDirection2(grid, tbox));
                         }
                     }
                 }
@@ -1149,9 +1349,9 @@ struct BaR_Logic
             // ----- todo  ---------
             // pf.getBestMove(grid);
             //&&NoSacNeeded(grid)  
-            getBestMoveBox(grid, tbox);
+            getBestMoveBox2(grid, tbox);
             nm.setMovePos(tbox.row, tbox.col);
-            nm.setMoveVal(getBestDirection(grid, tbox));
+            nm.setMoveVal(getBestDirection2(grid, tbox));
         }
         else if(mc[3]) //last line
         {
@@ -1162,7 +1362,7 @@ struct BaR_Logic
                         tbox.setPos(r, c);
                         tbox.setVal(grid.boxV[r][c]);
                         nm.setMovePos(r, c);
-                        nm.setMoveVal(getBestDirection(grid, tbox));
+                        nm.setMoveVal(getBestDirection2(grid, tbox));
                     }
         }
         else if(grid.total_lines < 2 && firstmoveisset)
@@ -1171,7 +1371,7 @@ struct BaR_Logic
         }
        else
         {
-            getBestMoveBox(grid, tbox);
+            getBestMoveBox2(grid, tbox);
             if(grid.hasBestDirection(tbox, tdir)) 
             {
                 nm.setMovePos(tbox.row, tbox.col);
@@ -1180,9 +1380,9 @@ struct BaR_Logic
             else
             {
                 grid.lCount[tbox.row][tbox.col] = 4;
-                getBestMoveBox(grid, tbox);
+                getBestMoveBox2(grid, tbox);
                 nm.setMovePos(tbox.row, tbox.col);
-                nm.setMoveVal(getBestDirection(grid, tbox));
+                nm.setMoveVal(getBestDirection2(grid, tbox));
             }
             
         }
@@ -1193,7 +1393,7 @@ struct BaR_Logic
                 if (!(nm.row == 0 && nm.col == 0 && nm.dir == bd_south)) 
                 {
                     nm.setMovePos(moves.box[i].row, moves.box[i].col);
-                    nm.setMoveVal(getBestDirection(grid, tbox));
+                    nm.setMoveVal(getBestDirection2(grid, tbox));
                 }
                 
             } 
