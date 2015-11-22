@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 4;
-const int DaB_MINOR_VERSION = 7;
+const int DaB_MINOR_VERSION = 8;
 
 #define BaR_SIZE 5
 
@@ -877,7 +877,7 @@ struct BaR_Logic
             if(moves.box[o].lcount == 3)
             { b=moves.box[o]; return; }
         // check for open corners
-        //*
+        /*
         for(o=0; o<moves.boxCount();++o)
         {
             if (moves.box[o].row == 0 && moves.box[o].col == BaR_SIZE-1) 
