@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 4;
-const int DaB_MINOR_VERSION = 1;
+const int DaB_MINOR_VERSION = 2;
 
 #define BaR_SIZE 5
 
@@ -180,7 +180,6 @@ struct BaR_Grid
     int lCount[BaR_SIZE][BaR_SIZE];
     int pID[BaR_SIZE][BaR_SIZE];
     int pType[BaR_SIZE][BaR_SIZE];
-    //BaR_Box b2[BaR_SIZE][BaR_SIZE];
     
 	BaR_Grid():total_lines(0){zero();};
     
@@ -404,6 +403,48 @@ struct BaR_Grid
             {
                 dir = bd_north; return true;
             }
+        }
+        return false;
+    };
+    bool hasADirection(int r,int c, int& dir)
+    {
+        int tempV=0;
+        tempV = boxV[r][c];
+        BaR_Box b = BaR_Box();
+        b.setPos(r, c);
+        b.setVal(boxV[r][c]);
+        
+        if(b.westOpen())
+        {
+            if(lCount[b.row][b.col] == 3 || c == 0)
+            {
+                dir = bd_west; return true;
+            }
+            dir = bd_west; return true;
+        }
+        if(b.southOpen())
+        {
+            if(lCount[b.row][b.col] == 3 || b.row == BaR_SIZE-1)
+            {
+                dir = bd_south; return true;
+            }
+            dir = bd_south; return true;
+        }
+        if(b.eastOpen())
+        {
+            if(lCount[b.row][b.col] == 3 || b.col == BaR_SIZE-1)
+            {
+                dir = bd_east; return true;
+            }
+            dir = bd_east; return true;
+        }
+        if(b.northOpen())
+        {
+            if(lCount[b.row][b.col] == 3 || b.row == 0)
+            {
+                dir = bd_north;
+            }
+            dir = bd_north; return true;
         }
         return false;
     };
@@ -810,8 +851,6 @@ struct BaR_Logic
     
     void getBestMoveBox(BaR_Grid& grid, BaR_Box& b)
     {
-        int o;
-        
         
         for (int r=0; r<BaR_SIZE; ++r) 
             for (int c=0; c<BaR_SIZE; ++c) 
@@ -869,8 +908,8 @@ struct BaR_Logic
     int getBestDirection(BaR_Grid& grid, BaR_Box& b)
     {
         
-        int temp=0;
-        temp = grid.boxV[b.row][b.col];
+        int tdir=0;
+        tdir = 0;//grid.boxV[b.row][b.col];
         
         if(b.southOpen())
         {
@@ -920,6 +959,9 @@ struct BaR_Logic
         // add more logic
         // ***todo***
        // hide this box and look for another move box
+        if(grid.hasADirection(b.row, b.col, tdir))
+            return tdir;
+        std::clog<< "box given with no direction"<<std::endl;
         if(b.southOpen())
             return bd_south;
         else if(b.eastOpen())
@@ -932,15 +974,25 @@ struct BaR_Logic
     
     void setNextMove2(BaR_Grid& grid, next_move& nm)
     {
+        int tdir=bd_none;
         moves.setMoves(grid);
         BaR_Box tbox = BaR_Box(); // temp box
-        if (moves.box.size() == 0) {std::cout<< "noMove";return;}//Game Over
+        if (moves.box.size() == 0) {std::clog<< "noMove"<<std::endl;return;}//Game Over
         // set Move poition
         else if (moves.box.size() == 1) 
         {
             tbox=moves.box[0];
+            tbox.setPos(moves.box[0].row, moves.box[0].col);
+            tbox.setVal(grid.boxV[tbox.row][tbox.col]);
             nm.setMovePos(tbox.row, tbox.col);
-            nm.setMoveVal(getBestDirection(grid, tbox));
+            if (!grid.hasBestDirection(tbox, tdir)) 
+            {
+                if (!grid.hasADirection(tbox.row, tbox.col, tdir)) {
+                    std::clog<<"noMove"<<std::endl;
+                }
+                
+            }
+            nm.setMoveVal(tdir);
         }
         else if(grid.total_lines < 2 && firstmoveisset)
         {
@@ -948,8 +1000,18 @@ struct BaR_Logic
         }
         else
         {
+          
             getBestMoveBox(grid, tbox);
             nm.setMovePos(tbox.row, tbox.col);
+            if(!grid.hasBestDirection(tbox, tdir)) 
+            {
+                if(!grid.hasADirection(tbox.row, tbox.col, tdir)) 
+                {
+                    std::clog<<"noMove"<<std::endl;
+                }
+                
+            }
+           
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
     }; 
@@ -1040,9 +1102,7 @@ struct BaR_Logic
     void setNextMove4(BaR_Grid& grid, next_move& nm)
     {
         BaR_Box tbox = BaR_Box();
-       // BaR_Grid grid = ogrid;
-      //  grid.calc();
-        int mc[5], totalmoves=0;// Moves Count
+         int mc[5], totalmoves=0;// Moves Count
         
         for (int i=0; i<5; ++i) 
         {
