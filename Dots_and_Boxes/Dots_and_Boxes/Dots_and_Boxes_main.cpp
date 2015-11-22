@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 4;
-const int DaB_MINOR_VERSION = 8;
+const int DaB_MINOR_VERSION = 12;
 
 #define BaR_SIZE 5
 
@@ -224,6 +224,7 @@ struct BaR_Grid
                 if((lCount[r][c] == 2 && pID[r][c] < 1)) 
                 {   
                     anywithoutID = true;
+                    
                 }
                 else if(lCount[r][c] == 2 && pID[r][c] > 0 && pID[r][c] > pathcount)
                 {
@@ -274,7 +275,7 @@ struct BaR_Grid
     };
     
     void addMove(next_move& nm)
-    {
+    {// ***todo***
         /* need to correct
          if((b2[nm.row][nm.col].isDirOpen(nm.dir)))
          {
@@ -882,22 +883,22 @@ struct BaR_Logic
         {
             if (moves.box[o].row == 0 && moves.box[o].col == BaR_SIZE-1) 
             {
-                if(moves.box[o].lcount < 2)
+                if(grid.lCount[moves.box[o].row][moves.box[o].col] < 2)
                     b=moves.box[o]; return;
             }
             if (moves.box[o].row == BaR_SIZE-1 && moves.box[o].col == BaR_SIZE-1) 
             {
-                if(moves.box[o].lcount < 2)
+                if(grid.lCount[moves.box[o].row][moves.box[o].col] < 2)
                     b=moves.box[o]; return;
             }
             if (moves.box[o].row == BaR_SIZE-1 && moves.box[o].col == 0) 
             {
-                if(moves.box[o].lcount < 2)
+                if(grid.lCount[moves.box[o].row][moves.box[o].col] < 2)
                     b=moves.box[o]; return;
             }
             if (moves.box[o].row == 0 && moves.box[o].col == 0) 
             {
-                if(moves.box[o].lcount < 2)
+                if(grid.lCount[moves.box[o].row][moves.box[o].col] < 2)
                     b=moves.box[o]; return;
             }
         }//*/
@@ -995,7 +996,7 @@ struct BaR_Logic
     {
         
         int temp=0;
-        temp = b.val;
+        //temp = b.val;
         
         if(b.eastOpen())
         {
@@ -1042,7 +1043,32 @@ struct BaR_Logic
             }
         }
         
-        // add more logic
+        // test this logic
+        if(grid.countBoxesWith(2) == moves.boxCount())
+        {
+        if(grid.hasADirection(b.row, b.col, temp))
+            return temp;
+        }
+        else
+        {
+            for(int o=0; o<moves.boxCount();++o)// maybe <= here ****************
+            {
+                if(grid.hasBestDirection(moves.box[o], temp))
+                {
+                    b=moves.box[o]; return temp;
+                }
+            }        
+            for(int o=0; o<moves.boxCount();++o)// maybe <= here ****************
+            {
+                if(grid.hasADirection(moves.box[o].row, moves.box[o].col, temp))
+                {
+                    b=moves.box[o]; return temp;
+                }
+            }        
+
+            
+        }
+        
         if(b.southOpen())
             return bd_south;
         else if(b.eastOpen())
@@ -1055,6 +1081,7 @@ struct BaR_Logic
     
     void setNextMove(BaR_Grid& grid, next_move& nm)
     {
+        int tdir=0;
         moves.setMoves(grid);
         BaR_Box tbox = BaR_Box(); // temp box
         if (moves.box.size() == 0) {std::cout<< "noMove";return;}//Game Over
@@ -1062,6 +1089,7 @@ struct BaR_Logic
         else if (moves.box.size() == 1) 
         {
             tbox=moves.box[0];
+            
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
@@ -1072,8 +1100,17 @@ struct BaR_Logic
         else
         {
             getBestMoveBox(grid, tbox);
+            if(grid.hasBestDirection(tbox, tdir))
+            {
             nm.setMovePos(tbox.row, tbox.col);
-            nm.setMoveVal(getBestDirection(grid, tbox));
+            nm.setMoveVal(tdir);
+            }
+            else if(grid.hasADirection(tbox.row, tbox.col, tdir))
+            {
+                nm.setMovePos(tbox.row, tbox.col);
+                nm.setMoveVal(tdir);
+                
+            }
         }
         
         
@@ -1191,6 +1228,7 @@ struct BaR_Logic
         // add more logic
         // ***todo***
         // hide this box and look for another move box
+        // need to get difrent move have bad move here*******
         if(grid.hasADirection(b.row, b.col, tdir))
             return tdir;
         std::clog<< "box given with no direction"<<std::endl;
