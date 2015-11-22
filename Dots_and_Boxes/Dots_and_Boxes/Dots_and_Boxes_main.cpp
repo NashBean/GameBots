@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 4;
-const int DaB_MINOR_VERSION = 4;
+const int DaB_MINOR_VERSION = 5;
 
 #define BaR_SIZE 5
 
@@ -1033,7 +1033,7 @@ struct BaR_Logic
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection(grid, tbox));
         }
-        else if(grid.total_lines < 2 && firstmoveisset)
+        else if(grid.total_lines < 1 && firstmoveisset)
         {
             nm=firstMove;
         }
@@ -1195,7 +1195,7 @@ struct BaR_Logic
             }
             nm.setMoveVal(tdir);
         }
-        else if(grid.total_lines < 2 && firstmoveisset)
+        else if(grid.total_lines < 1 && firstmoveisset)
         {
             nm=firstMove;
         }
@@ -1251,7 +1251,7 @@ struct BaR_Logic
             nm.setMovePos(tbox.row, tbox.col);
             nm.setMoveVal(getBestDirection2(grid, tbox));
         }
-        else if(grid.total_lines < 2 && firstmoveisset)
+        else if(grid.total_lines < 1 && firstmoveisset)
         {
             nm=firstMove;
         }
@@ -1365,7 +1365,7 @@ struct BaR_Logic
                         nm.setMoveVal(getBestDirection2(grid, tbox));
                     }
         }
-        else if(grid.total_lines < 2 && firstmoveisset)
+        else if(grid.total_lines < 1 && firstmoveisset)
         {
             nm=firstMove;
         }
