@@ -6,9 +6,6 @@
 //  Copyright 2015 iBean Software.
 //  All rights reserved.
 //
-const int MzE_MAJOR_VERSION = 0;
-const int MzE_MINOR_VERSION = 6;
-
 
 #include<iostream>
 #include<vector>
