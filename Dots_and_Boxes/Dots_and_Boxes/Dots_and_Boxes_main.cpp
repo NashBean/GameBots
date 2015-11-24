@@ -13,6 +13,7 @@ const int DaB_MINOR_VERSION = 12;
 
 #define BaR_SIZE 5
 
+
 enum Box_Value {bv_top=1,bv_right=2,bv_bottem=4,bv_left=8};
 enum Box_Direct {bd_north,bd_east,bd_south,bd_west,bd_none};
 enum Path_Type {pt_Unknown, pt_ConEdge, pt_OinMiddle, pt_EdgetoEdge, pt_Corner, 
