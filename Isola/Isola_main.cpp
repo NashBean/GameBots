@@ -10,6 +10,9 @@
 #define GRID_SIZE 7
 #define GRID_MID 3
 
+const int MzE_MAJOR_VERSION = 1;
+const int MzE_MINOR_VERSION = 0;
+
 struct Position 
 {
     int x, y;
