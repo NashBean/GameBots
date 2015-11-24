@@ -9,7 +9,7 @@
 #include <vector>
 
 const int DaB_MAJOR_VERSION = 2;
-const int DaB_MINOR_VERSION = 9;
+const int DaB_MINOR_VERSION = 10;
 
 #define BaR_SIZE 5
 
@@ -249,10 +249,61 @@ struct BaR_Grid
                     ++total_lines;
             }
         }
+// -----------ERRor somewhere in this chunk
+       /*
+        bool anywithoutID=0;
+        int pathcount=0;
+        BaR_Box tbox = BaR_Box();
         
+        //  anywithoutID  check loop and set pathcount
+        for(int r=0; r<BaR_SIZE; ++r) 
+            for (int c=0; c<BaR_SIZE; ++c) 
+            {
+                if((b2[r][c].lcount == 2 && b2[r][c].runID < 1)) 
+                {   
+                    anywithoutID = true;
+                }
+                else if(b2[r][c].lcount == 2 && b2[r][c].runID > 0)
+                {
+                    if(b2[r][c].runID > pathcount) pathcount = b2[r][c].runID;
+                }
+            }//  anywithoutID  check loop
+        
+        while(anywithoutID) 
+        {
+            anywithoutID = false;
+            //  anywithoutID  check loop
+            for(int r=0; r<BaR_SIZE; ++r) 
+                for (int c=0; c<BaR_SIZE; ++c) 
+                {
+                    if((b2[r][c].lcount == 2 && b2[r][c].runID < 1)) 
+                    {   
+                        anywithoutID = true;
+                        ++pathcount;
+                        b2[r][c].runID = pathcount;
+                        setPath(b2[r][c], pathcount);
+                    }
+                }//  anywithoutID  check loop
+            
+            
+            //  anywithoutID  check loop without else if
+            for(int r=0; r<BaR_SIZE; ++r) 
+                for (int c=0; c<BaR_SIZE; ++c) 
+                {
+                    if((b2[r][c].lcount == 2 && b2[r][c].runID < 1)) 
+                    {   
+                        anywithoutID = true;
+                    }
+                }//  anywithoutID  check loop
+        }
+//*/
         
         
     };
+    void init(BaR_Grid& grid)
+    {
+    };
+
     
     void getInput()
     {   
@@ -1142,7 +1193,7 @@ struct BaR_Logic
     
     void setNextMove2(BaR_Grid& grid, next_move& nm)
     {
-        
+        grid.calc();
         moves.setMoves(grid);
         BaR_Box tbox = BaR_Box(); // temp box
         if (moves.box.size() == 0) {std::cout<< "noMove";return;}//Game Over
@@ -1184,7 +1235,7 @@ int main()
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();
     next_move nm = next_move();
-    //* rem switch
+    /* rem switch
      grid.getTestInput3();
      /*/
     grid.getInput();
