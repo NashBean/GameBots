@@ -11,17 +11,7 @@
 #define GRID_MID 3
 
 const int MzE_MAJOR_VERSION = 1;
-const int MzE_MINOR_VERSION = 1;
-//
-//  main.cpp
-//  Isola
-//
-//  Created by nash on 10/25/15.
-//
-#include <iostream>
-#include <vector>
-#define GRID_SIZE 7
-#define GRID_MID 3
+const int MzE_MINOR_VERSION = 2;
 
 struct Position 
 {
