@@ -11,7 +11,17 @@
 #define GRID_MID 3
 
 const int MzE_MAJOR_VERSION = 1;
-const int MzE_MINOR_VERSION = 0;
+const int MzE_MINOR_VERSION = 1;
+//
+//  main.cpp
+//  Isola
+//
+//  Created by nash on 10/25/15.
+//
+#include <iostream>
+#include <vector>
+#define GRID_SIZE 7
+#define GRID_MID 3
 
 struct Position 
 {
@@ -33,7 +43,7 @@ struct Position
         else if(y<py) result+=py-y;
         return result;
     };
-
+    
 	bool is_neighbour(int px, int py) 
 	{
     	if (px == x  &&  py == y)
@@ -61,7 +71,7 @@ struct	IsolaGrid
 	bool in_bounds(Position&	p)
 	{
 		if(p.x < 0 || p.y < 0)	return false;
-		else if(p.x >= GRID_SIZE || p.y >= GRID_SIZE)	return false;
+		else if(p.x >= GRID_SIZE && p.y >= GRID_SIZE)	return false;
 		return	true;
 	};
     
@@ -121,23 +131,10 @@ struct	IsolaGrid
         for(int	a=0; a<GRID_SIZE; ++a) 
         	for(int	b=0; b<GRID_SIZE; ++b) 
             	ref[a][b]=0;
-
+        
     };   
     
 };
-
-
-struct worm 
-{
-    Position* head;   
-    Position* hearts;   
-    Position* tail;   
-    worm(IsolaGrid&	g,Position&	phd,Position&	phr,Position& pt)
-    {
-        
-    };
-};
-
 
 struct	IsolaLogic
 {
@@ -155,7 +152,7 @@ struct	IsolaLogic
        	else	foe_id=1;
 	};
 	
-	void	learn_grid(IsolaGrid& g)
+	void	learn_grid(IsolaGrid&	g)
 	{
         Position    temp;
         for(int	b=0; b<GRID_SIZE; ++b) 
@@ -180,7 +177,7 @@ struct	IsolaLogic
             }
 	};
 	
-    void	proc_moves(IsolaGrid& g)
+    void	proc_moves(IsolaGrid&	g)
 	{
 		int	mysize=my_moves.size();
 		if(!mysize);//Game	Over
@@ -188,33 +185,15 @@ struct	IsolaLogic
 		{
             next_move.set(my_moves[0]);
         }
-		else if(mysize==2)
-		{
-            int safe0=g.safe(my_moves[0]);
-            int safe1=g.safe(my_moves[1]);
-            if (safe0>safe1) 
-            {
-                next_move.set(my_moves[0]);
-            }
-            else if (safe0<safe1 || safe0 != 2) 
-            {
-                next_move.set(my_moves[1]);
-            }
-            else
-            {
-               //todo goto next level
-                //find    next two points
-                //then check 
-            }
-        }
 		else 
 		{
-			int	slist[mysize],sbig=0,bigc=0;
+			int	slist[mysize],ssmall=GRID_SIZE,sbig=0,bigc=0;
 			int	i;
 			
 			for(i=0;i<mysize;++i)
 			{
 				slist[i]=g.safe(my_moves[i]);
+				if(slist[i]<ssmall)ssmall=slist[i];
 				if(slist[i]>sbig){sbig=slist[i];}
 			}
 			for(i=0;i<mysize;++i)
@@ -228,9 +207,9 @@ struct	IsolaLogic
                         break;
                     }
 			}
-            else if(bigc==2)
+			if(bigc==2)
             {   
-                 int bigmove[2];   
+                int bigmove[2];   
                 bigc=0;
 				for(i=0;i<mysize;++i)
 					if(slist[i]==sbig)
@@ -243,9 +222,9 @@ struct	IsolaLogic
                     next_move.set(my_moves[bigmove[0]]);
                 }
                 else  next_move.set(my_moves[bigmove[1]]);
-               
+                
             }
-			else if(bigc==3)
+			if(bigc==3)
             {
                 int bigindex[bigc];
                 bigc=0;
@@ -356,11 +335,10 @@ int main(int argc, const char * argv[]) {
 	IsolaGrid	grid;
 	IsolaLogic	brain;
     
-	//grid.scan_state();
-    grid.start_game();
-	//brain.scan_id();
-    brain.my_id=1;
-    brain.foe_id=2;
+	grid.scan_state();
+    //grid.start_game();
+	brain.scan_id();
+    //brain.my_id=1;brain.foe_id=2;
 	brain.learn_grid(grid);
 	brain.proc_moves(grid);
 	brain.proc_remove(grid);
