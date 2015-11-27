@@ -10,8 +10,8 @@
 #include<iostream>
 #include<vector>
 
-const int MzE_MAJOR_VERSION = 1;
-const int MzE_MINOR_VERSION = 0;
+const int CBPO_MAJOR_VERSION = 1;
+const int CBPO_MINOR_VERSION = 0;
 
 using namespace std;
 #define GRID_SIZE  5
