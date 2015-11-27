@@ -9,6 +9,10 @@
 
 #include<iostream>
 #include<vector>
+
+const int CBS_MAJOR_VERSION = 1;
+const int CBS_MINOR_VERSION = 0;
+
 using namespace std;
 #define GRID_SIZE  5
 
