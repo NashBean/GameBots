@@ -9,7 +9,12 @@
 
 #include<iostream>
 #include<vector>
+
+const int CBL_MAJOR_VERSION = 1;
+const int CBL_MINOR_VERSION = 0;
+
 using namespace std;
+
 void next_move(int row, int col, int gh, int gw, vector<string>& board) 
 {
     int cdr, cdc, closest=gh+gw;
