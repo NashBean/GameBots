@@ -1,0 +1,172 @@
+/*
+int main (int argc, const char * argv[])
+{
+int rv, x, y;//return value
+rv = system("MazeEscape");
+std::cout << "###"<< std::endl;
+std::cout << "_b_"<< std::endl;
+std::cout << "___"<< std::endl;
+std::cout << "1"<< std::endl;
+std::cin >> x >> y;
+std::cout << x<<" " <<y<< std::endl;
+
+return run_main();
+}
+
+//*/
+
+
+
+
+//   Element chart ******************************************************
+
+#include <iostream>
+#include <string>
+
+using std::cout;
+using std::endl;
+using std::string;
+using std::cin;
+
+int main()
+{
+string element[] = {
+"hydrogen","helium","lithium","beryllium","boron","carbon","nitrogen","oxygen",
+"flourine","neon","sodium","magnesium","aluminum","silicon","phosphorus","sulfer",
+"chlorine","argon","potassium","calcium","scandium","titanium","vandium","chromium",
+"manganese","iron","cobalt","nickel","copper","zinc","gallium","germanium",
+"arsinic","selenium","bromine","krypton","rubidium","strontanium","yttrium",
+"zirconium","niobium","molybdenum","technetium","ruthenium","rhodium",
+"palladium","silver","cadmium","indium","tin","antimony","tellurium","iodine",
+"xenon","cesium","barium","lanthanum","cerium","praseodymium","neodymium","promethium",
+"samarium","europium","gadolinium","terbium","dysprosium ","holmium","erbium",
+"thulium","ytterbium","lutetium","hafnium","tantilum","tungsten","rhenium",
+"osmium","iridium","platnium","gold","mercury","lead","bismuth","polonium",
+"astitine","radon","francium","radium","actnium","thorium","protactinium",
+"uranium","neptunium","plutonium","americium","curium,berkelium","californium",
+"einsteinium","fermium","mendelevium","nobelium","lawrencium","rutherfordium",
+"dubnium","seaborgium","bohrium","hassium", "meitnerium", "darmstadtium",
+"roentgenium", "copernicium", "ununtrium", "ununquadium", "ununpentium",
+"ununhexium", "ununsexium", "ununoctium" };
+
+int noOfElements = sizeof(element) / sizeof(string);
+bool found = false;
+string searchElement = "";
+int index = 0;
+
+// LIST OUT ALL ELEMENTS
+cout << "There are " << noOfElements << " elements and they are: " << endl;
+for (int i = 0; i < noOfElements; i++)
+cout << i << '\t' << element[i] << endl;
+
+// SEARCH FOR AN ELEMENT
+cout << "What element are you looking for? ";
+cin >> searchElement;
+
+for (int i = 0; i < noOfElements; i++)
+{
+if (element[i] == searchElement)
+{
+found = true;
+index = i;
+}
+}
+
+if (found)
+cout << searchElement << " is element no. " << index << endl;
+else
+cout << "Element not found." << endl;
+
+system("pause");
+return 0;
+}
+
+
+// **************************************************** v2
+#include <iostream>
+#include <string>
+#include <windows.h>
+using namespace std;
+
+int main()
+{
+string element[] = {
+"hydrogen","helium","lithium","beryllium","boron","carbon","nitrogen","oxygen",
+"flourine","neon","sodium","magnesium","aluminum","silicon","phosphorus","sulfer",
+"chlorine","argon","potassium","calcium","scandium","titanium","vandium","chromium",
+"manganese","iron","cobalt","nickel","copper","zinc","gallium","germanium",
+"arsinic","selenium","bromine","krypton","rubidium","strontanium","yttrium",
+"zirconium","niobium","molybdenum","technetium","ruthenium","rhodium",
+"palladium","silver","cadmium","indium","tin","antimony","tellurium","iodine",
+"xenon","cesium","barium","lanthanum","cerium","praseodymium","neodymium","promethium",
+"samarium","europium","gadolinium","terbium","dysprosium ","holmium","erbium",
+"thulium","ytterbium","lutetium","hafnium","tantilum","tungsten","rhenium",
+"osmium","iridium","platnium","gold","mercury","lead","bismuth","polonium",
+"astitine","radon","francium","radium","actnium","thorium","protactinium",
+"uranium","neptunium","plutonium","americium","curium,berkelium","californium",
+"einsteinium","fermium","mendelevium","nobelium","lawrencium","rutherfordium",
+"dubnium","seaborgium","bohrium","hassium", "meitnerium", "darmstadtium",
+"roentgenium", "copernicium", "ununtrium", "ununquadium", "ununpentium",
+"ununhexium", "ununsexium", "ununoctium" };
+
+int noOfElements = sizeof(element) / sizeof(string);
+bool found = false;
+string searchElement = "";
+int index=0, protons=0, selection, loadup=0;
+char YorN='Y';
+/// LIST OUT ALL ELEMENTS
+while(loadup<3){
+system("CLS");
+cout<<"Cataloging Elements\n\nLoading";
+Sleep(500);
+system("CLS");
+cout<<"Cataloging Elements\n\nLoading.";
+Sleep(500);
+system("CLS");
+cout<<"Cataloging Elements\n\nLoading..";
+Sleep(500);
+system("CLS");
+cout<<"Cataloging Elements\n\nLoading...";
+Sleep(500);
+system("CLS");
+loadup++;
+}
+system("CLS");
+cout << "There are " << noOfElements-1<< endl;
+while(YorN=='Y'||YorN=='y'){
+cout<<"How do you want to search for your Element?\n1. Atomic #\n2. Exact Name\n> ";
+cin>>selection;
+system("CLS");
+if(selection==1){
+/// SEARCH FOR AN ELEMENT BY ATOMIC #
+cout<<"What is the atomic number that your looking for?\n> ";
+cin>>protons; system("CLS");
+cout<<"element #"<<protons<<" is "<<element[protons]<<endl;
+}else if(selection==2){
+/// SEARCH FOR AN ELEMENT BY NAME
+cout << "What is the name of the element that you are looking for? *Case Sensitive*\nYou can search by the atomic # or by the name.\n> ";
+cin >> searchElement;
+for (int i = 0; i < noOfElements; i++)
+{
+if (element[i] == searchElement)
+{
+found = true;
+index = i;
+}
+}
+if (found)
+cout << searchElement << " is element no. " << index << endl;
+else
+cout << "Element not found." << endl;
+}else{
+cout<<"Sorry this program doesn't support that answer."<<endl;
+}
+
+system("pause");
+system("CLS");
+cout<<"Restart?\n Y or N?\n> ";
+cin>>YorN;
+system("CLS");
+}
+return 0;
+}
