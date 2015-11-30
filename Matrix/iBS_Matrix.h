@@ -81,7 +81,7 @@ struct Matrix
 
     //   not <= below \/ because first time counts as 2
         for(int i=1; i<power; ++i)
-            *this = *this * (tM2);
+            *this = (*this) * (tM2);
         
         return *this;
     }
