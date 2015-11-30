@@ -1,0 +1,205 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C65B62CE1BDDA6B3000699AC /* tttLogic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C65B62CC1BDDA6B3000699AC /* tttLogic.cpp */; };
+		C69651461BFA70CA004C1DD3 /* TicTacToe_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C69651451BFA70CA004C1DD3 /* TicTacToe_main.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C65B62BE1BDDA668000699AC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C65B62C01BDDA669000699AC /* TicTacToe */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TicTacToe; sourceTree = BUILT_PRODUCTS_DIR; };
+		C65B62C61BDDA669000699AC /* TicTacToe.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = TicTacToe.1; sourceTree = "<group>"; };
+		C65B62CC1BDDA6B3000699AC /* tttLogic.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tttLogic.cpp; sourceTree = "<group>"; };
+		C65B62CD1BDDA6B3000699AC /* tttLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tttLogic.h; sourceTree = "<group>"; };
+		C69651451BFA70CA004C1DD3 /* TicTacToe_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TicTacToe_main.cpp; path = ../../TicTacToe_main.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C65B62BD1BDDA668000699AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C65B62B51BDDA668000699AC = {
+			isa = PBXGroup;
+			children = (
+				C65B62C31BDDA669000699AC /* TicTacToe */,
+				C65B62C11BDDA669000699AC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C65B62C11BDDA669000699AC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C65B62C01BDDA669000699AC /* TicTacToe */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C65B62C31BDDA669000699AC /* TicTacToe */ = {
+			isa = PBXGroup;
+			children = (
+				C69651451BFA70CA004C1DD3 /* TicTacToe_main.cpp */,
+				C65B62C61BDDA669000699AC /* TicTacToe.1 */,
+				C65B62CC1BDDA6B3000699AC /* tttLogic.cpp */,
+				C65B62CD1BDDA6B3000699AC /* tttLogic.h */,
+			);
+			path = TicTacToe;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C65B62BF1BDDA668000699AC /* TicTacToe */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C65B62C91BDDA669000699AC /* Build configuration list for PBXNativeTarget "TicTacToe" */;
+			buildPhases = (
+				C65B62BC1BDDA668000699AC /* Sources */,
+				C65B62BD1BDDA668000699AC /* Frameworks */,
+				C65B62BE1BDDA668000699AC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = TicTacToe;
+			productName = TicTacToe;
+			productReference = C65B62C01BDDA669000699AC /* TicTacToe */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C65B62B71BDDA668000699AC /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C65B62BA1BDDA668000699AC /* Build configuration list for PBXProject "TicTacToe" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C65B62B51BDDA668000699AC;
+			productRefGroup = C65B62C11BDDA669000699AC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C65B62BF1BDDA668000699AC /* TicTacToe */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C65B62BC1BDDA668000699AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C65B62CE1BDDA6B3000699AC /* tttLogic.cpp in Sources */,
+				C69651461BFA70CA004C1DD3 /* TicTacToe_main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C65B62C71BDDA669000699AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C65B62C81BDDA669000699AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C65B62CA1BDDA669000699AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C65B62CB1BDDA669000699AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C65B62BA1BDDA668000699AC /* Build configuration list for PBXProject "TicTacToe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C65B62C71BDDA669000699AC /* Debug */,
+				C65B62C81BDDA669000699AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C65B62C91BDDA669000699AC /* Build configuration list for PBXNativeTarget "TicTacToe" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C65B62CA1BDDA669000699AC /* Debug */,
+				C65B62CB1BDDA669000699AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C65B62B71BDDA668000699AC /* Project object */;
+}

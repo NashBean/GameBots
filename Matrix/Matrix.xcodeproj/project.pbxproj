@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C6B0D42B1C090D250046E409 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6B0D42A1C090D250046E409 /* main.cpp */; };
+		C6B0D42B1C090D250046E409 /* matrix_exaple_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6B0D42A1C090D250046E409 /* matrix_exaple_main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,8 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C6A6E0F01C0B90FA00FC471D /* iBS_Matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iBS_Matrix.h; sourceTree = SOURCE_ROOT; };
 		C6B0D4261C090D250046E409 /* Matrix */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Matrix; sourceTree = BUILT_PRODUCTS_DIR; };
-		C6B0D42A1C090D250046E409 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		C6B0D42A1C090D250046E409 /* matrix_exaple_main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = matrix_exaple_main.cpp; sourceTree = "<group>"; };
 		C6B0D42C1C090D250046E409 /* Matrix.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Matrix.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -58,8 +59,9 @@
 		C6B0D4291C090D250046E409 /* Matrix */ = {
 			isa = PBXGroup;
 			children = (
-				C6B0D42A1C090D250046E409 /* main.cpp */,
+				C6B0D42A1C090D250046E409 /* matrix_exaple_main.cpp */,
 				C6B0D42C1C090D250046E409 /* Matrix.1 */,
+				C6A6E0F01C0B90FA00FC471D /* iBS_Matrix.h */,
 			);
 			path = Matrix;
 			sourceTree = "<group>";
@@ -111,7 +113,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C6B0D42B1C090D250046E409 /* main.cpp in Sources */,
+				C6B0D42B1C090D250046E409 /* matrix_exaple_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +193,7 @@
 				C6B0D4311C090D250046E409 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

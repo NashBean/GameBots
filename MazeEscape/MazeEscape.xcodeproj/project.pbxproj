@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C639CCC61C02B670000F8FF9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C639CCC51C02B670000F8FF9 /* main.cpp */; };
+		C639CCD01C02BBD6000F8FF9 /* MazeEscape_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C639CCCE1C02BBD6000F8FF9 /* MazeEscape_main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,7 @@
 		C639CCC11C02B670000F8FF9 /* MazeEscape */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MazeEscape; sourceTree = BUILT_PRODUCTS_DIR; };
 		C639CCC51C02B670000F8FF9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C639CCC71C02B670000F8FF9 /* MazeEscape.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = MazeEscape.1; sourceTree = "<group>"; };
+		C639CCCE1C02BBD6000F8FF9 /* MazeEscape_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MazeEscape_main.cpp; path = ../MazeEscape_main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				C639CCC51C02B670000F8FF9 /* main.cpp */,
+				C639CCCE1C02BBD6000F8FF9 /* MazeEscape_main.cpp */,
 				C639CCC71C02B670000F8FF9 /* MazeEscape.1 */,
 			);
 			path = MazeEscape;
@@ -112,6 +115,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C639CCC61C02B670000F8FF9 /* main.cpp in Sources */,
+				C639CCD01C02BBD6000F8FF9 /* MazeEscape_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,7 +14,7 @@
 
 int main (int argc, const char * argv[])
 { //tm to the power of 100
-    iBS::Matrix tM, tM2;
+    iBS::Matrix tM;
     tM.a.resize(3);
     for (int cs=0; cs<3; ++cs) 
     {

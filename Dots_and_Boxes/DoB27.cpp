@@ -660,7 +660,7 @@ private:
     next_move firstMove;
 };
 
-int wasmain()
+int was_main()
 {
     BaR_Grid grid = BaR_Grid();
     BaR_Logic logic = BaR_Logic();

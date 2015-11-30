@@ -1,0 +1,94 @@
+<html>
+    <head>
+        
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+            <meta name="Author" content="Alex Champandard">
+                
+                <link href="http://ai-depot.com/Style/Article.css" rel="stylesheet" type="text/css">
+                    
+                    <title>Introduction</title>
+                    
+    </head>
+    
+    <body>
+        
+        <?
+        include('../Include/Header.php');
+        include('/usr/home/alexjc/public_www/Include/Utils.php');
+        Menu();
+        ?>
+        
+        <h1>Introduction</h1>
+        
+        <div class=nav> 
+            <div class=left>
+                Version: <a href='http://ai-depot.com/Features/Print.html?id=6'>Printer Friendly</a><br>
+                    <a href='Bot-Introduction.html'><img src='/Images/Nav-middle.png' alt=''></a>
+                    <a href='Bot-Approaches.html'><img src='/Images/Nav-right.png' alt=''></a>
+                    <a href='Bot-Engines.html'><img src='/Images/Nav-right.png' alt=''></a>
+                    <a href='Bot-Information.html'><img src='/Images/Nav-right.png' alt=''></a>
+                    <a href='Bot-ClientSide.html'><img src='/Images/Nav-right.png' alt=''></a>
+                    <a href='Bot-GameInterface.html'><img src='/Images/Nav-right.png' alt=''></a>
+                    <a href='Bot-Conclusion.html'><img src='/Images/Nav-right.png' alt=''></a>
+                    </div>
+                    <div class=right>
+                    <span style='color: #c0c080; font-style: italic;'>First Steps in Game AI: Your Own Bot</span><br>
+                    <span style='color: #808080;'>Alex J. Champandard</span>
+                    </div></div>
+                    
+                    <div class=page>
+                    
+                    <p class=thread>Be sure to check out <b>AiGameDev.com</b> if you're interesting in <a href="http://AiGameDev.com" title="Game AI for Developers">Game AI Programming</a>. Also see the <a href="http://AiGameDev.com/newsletter" title="Game AI Newsletter">Game AI Newsletter</a>.</p>
+                
+                <p><span class=f>S</span>o your next door neighbour has let his pet Yorkshire terrier run wild and you need something to keep you busy until the threat is neutralised, or your girl-friend constantly beats you when you play death-match and you want to get revenge... Then you've come to the right place: <i>bot artificial intelligence</i> is just what you need!</p>
+                
+                
+                <h2>Motivation</h2>
+                
+                <p><span class=f>I</span>t's very likely that you've played a first person shooter to death, and instead of letting the addiction ruin your life, you decided to redirect your passion to something more constructive.  Aside from being extremely fascinating, AI is also a very cool branch of science where the sky is your limit... Indeed, there are many different kinds of behaviours you can program into your bot, each of which will potentially make it act in a more <i>&ldquo;clever&rdquo;</i> human like fashion.</p>
+                
+                <p><span class=f>T</span>hat said, not only hobby programmers are tackling game situations.  Some top accademic researchers are admitting that games - and first person shooters among others - are ideal for the development of <i>advanced artificial intelligence</i>, and notably machine learning techniques.  Indeed, they provide an ideal framework, with a complex environment which is very well suited to the development and improvement of AI technology.  This is a bit of a radical leap from the old 2D 'agent' simulators that we're used to seeing, but I'm sure it's for the best!</p>
+                
+                <p><span class=f>S</span>ee John Laird's <a href="http://ai.eecs.umich.edu/people/laird/gamesresearch.html">Artificial Intelligence & Computer Games Research</a> web page for some information about the motivation for using games in accademia.  Specifically, the second link down.</p>
+                    
+                    
+                    <h2>Overview</h2>
+                    
+                    <p><span class=f>T</span>his tutorial will start by looking into the different approaches that you can take when creating a bot for a first person shooter.  Specifically, the server side approach, the client side approach, and finally a game interface approach.</p>
+                    
+                    <p><span class=f>W</span>e'll then consider which engine is best suited to bot development, and we'll look into three top games that are all worthy choices: <i>Quake 2</i>, <i>Half-Life</i> and <i>Quake 3</i>.  Once that's been done, we'll analyse what information exactly the engines provide, and how it can be used by the artificial intelligence code.</p>
+                    
+                    <p><span class=f>T</span>he next section will consider applying the client side approach to creating a <i>Quake 2</i> bot.  Everything you need will be detailed, and you will be explained the steps to start creating your own bot.  In a similar fashion, we'll then tackle <i>Half-Life</i>, and show how to create a third-party bot based on a bot template.</p>
+                    
+                    <p><span class=f>F</span>inally, we'll draw conclusions from all this, and point you in good directions to get you started</p>
+                    
+                    <p class=thread>Remember you can visit the <i>Message Store</i> to <a href="http://ai-depot.com/Games/53.html">discuss this tutorial</a>.  
+                    <?
+                    Connect($db);
+                    $result = mysql_query("SELECT children FROM threads WHERE id=53",$db) or die( mysql_error() );
+                    $children = mysql_fetch_row($result);
+                    if ($children[0]<=1) {
+                        ?>
+                        Comments are always welcome!.
+                        <? } else { ?>
+                        There are already <b><?= $children[0]-1 ?></b> replies in the thread, why not join in?
+                        <? }
+                        Disconnect($db);
+                        ?>
+                        </p>
+                        
+                        <div class=nav style='text-align: right;'>
+                            <a href='Bot-Introduction.html'><img src='/Images/Nav-middle.png' alt=''></a>
+                            <a href='Bot-Approaches.html'><img src='/Images/Nav-right.png' alt=''></a>
+                            <a href='Bot-Engines.html'><img src='/Images/Nav-right.png' alt=''></a>
+                            <a href='Bot-Information.html'><img src='/Images/Nav-right.png' alt=''></a>
+                            <a href='Bot-ClientSide.html'><img src='/Images/Nav-right.png' alt=''></a>
+                            <a href='Bot-GameInterface.html'><img src='/Images/Nav-right.png' alt=''></a>
+                            <a href='Bot-Conclusion.html'><img src='/Images/Nav-right.png' alt=''></a><br>Next: <a href='Bot-Approaches.html'>Possible Approaches</a>
+                        </div>
+                        
+                        <? Footer(); ?>
+                        
+    </body>
+    
+</html>

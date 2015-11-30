@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		C639CD031C0418AA000F8FF9 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C639CD021C0418AA000F8FF9 /* main.cpp */; };
+		C639CD1A1C05012F000F8FF9 /* BotScan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C639CD181C05012F000F8FF9 /* BotScan.cpp */; };
+		C639CD1D1C050913000F8FF9 /* BotUtilsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C639CD1B1C050913000F8FF9 /* BotUtilsTest.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +28,11 @@
 		C639CCFE1C0418AA000F8FF9 /* Bot_Work */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Bot_Work; sourceTree = BUILT_PRODUCTS_DIR; };
 		C639CD021C0418AA000F8FF9 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		C639CD041C0418AA000F8FF9 /* Bot_Work.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Bot_Work.1; sourceTree = "<group>"; };
+		C639CD121C043BDC000F8FF9 /* web_page_base.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = web_page_base.html; sourceTree = "<group>"; };
+		C639CD181C05012F000F8FF9 /* BotScan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BotScan.cpp; sourceTree = "<group>"; };
+		C639CD1B1C050913000F8FF9 /* BotUtilsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BotUtilsTest.cpp; sourceTree = "<group>"; };
+		C639CD1C1C050913000F8FF9 /* BotUtls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BotUtls.h; sourceTree = "<group>"; };
+		C639CD2F1C0661A0000F8FF9 /* OldCode.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = OldCode.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,7 +66,12 @@
 			isa = PBXGroup;
 			children = (
 				C639CD021C0418AA000F8FF9 /* main.cpp */,
+				C639CD2F1C0661A0000F8FF9 /* OldCode.txt */,
 				C639CD041C0418AA000F8FF9 /* Bot_Work.1 */,
+				C639CD121C043BDC000F8FF9 /* web_page_base.html */,
+				C639CD181C05012F000F8FF9 /* BotScan.cpp */,
+				C639CD1B1C050913000F8FF9 /* BotUtilsTest.cpp */,
+				C639CD1C1C050913000F8FF9 /* BotUtls.h */,
 			);
 			path = Bot_Work;
 			sourceTree = "<group>";
@@ -112,6 +124,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				C639CD031C0418AA000F8FF9 /* main.cpp in Sources */,
+				C639CD1A1C05012F000F8FF9 /* BotScan.cpp in Sources */,
+				C639CD1D1C050913000F8FF9 /* BotUtilsTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -191,6 +205,7 @@
 				C639CD091C0418AA000F8FF9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
