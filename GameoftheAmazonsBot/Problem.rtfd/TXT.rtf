@@ -1,0 +1,142 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fswiss\fcharset0 Helvetica;\f2\fmodern\fcharset0 Courier;
+}
+{\colortbl;\red255\green255\blue255;\red53\green76\blue140;\red0\green80\blue231;}
+\margl1440\margr1440\vieww9000\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\ql\qnatural
+
+\f0\fs24 \cf0 Game of the Amazons\
+Max. Marks: 100\
+
+\itap1\trowd \taflags1 \trgaph108\trleft-108 \trbrdrt\brdrnil \trbrdrl\brdrnil \trbrdrt\brdrnil \trbrdrr\brdrnil 
+\clvertalc \clshdrawnil \clwWidth980\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx2880
+\clmrg \clvertalc \clshdrawnil \clwWidth980\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx5760
+\clmrg \clvertalc \clshdrawnil \clwWidth980\clftsWidth3 \clbrdrt\brdrnil \clbrdrl\brdrnil \clbrdrb\brdrnil \clbrdrr\brdrnil \clpadl0 \clpadr0 \gaph\cellx8640
+\pard\intbl\itap1\pardeftab720\sl400\qc
+
+\f1\b\fs22 \cf1 \shad\shadx0\shady20\shadr0\shado255 \shadc2 \cell 
+\pard\intbl\itap1\cell 
+\pard\intbl\itap1\cell \lastrow\row
+\pard\pardeftab720\ql\qnatural
+
+\f0\b0\fs24 \cf0 \shad0 Game of the Amazons ({\field{\*\fldinst{HYPERLINK "https://en.wikipedia.org/wiki/Game_of_the_Amazons"}}{\fldrslt \cf3 \ul \ulc3 Wiki}}) is a two-player board game which is played on a 10x10 grid of cells. Each player has four amazons having initial configuration as shown in the image. \
+\
+\pard\pardeftab720\ql\qnatural
+
+\f1 \cf0 {{\NeXTGraphic amazons.png \width7940 \height7980 \noorient
+}¬}\pard\pardeftab720\ql\qnatural
+
+\f0 \cf0 \
+\
+\
+A move consists of two subsequent actions: \
+\
+1. One moves one of one's own amazons one or more empty squares in a straight line (orthogonally or diagonally), exactly as a queen moves in chess; it may not cross or enter a square occupied by an amazon of either color or an arrow. \
+2. After moving, the amazon shoots an arrow from its landing square to another square, using another queen-like move. This arrow may travel in any orthogonal or diagonal direction (even backwards along the same path the amazon just traveled, into or across the starting square if desired). An arrow, like an amazon, cannot cross or enter a square where another arrow has landed or an amazon of either color stands. The square where the arrow lands is marked to show that it can no longer be used. \
+\
+The last player to be able to make a move wins. \
+\
+Now your aim is to implement a bot that plays Game of Amazons with bots of other participants. The program you submit will run for each move played by your player in the game. \
+\
+\pard\pardeftab720\ql\qnatural
+
+\b \cf0 Input
+\b0  \
+The input is a 10x10 matrix consisting only of 0, 1, 2 and -1. Then another line follows which contains a number 1 or 2, which is your player id. The difference between player 1 and 2 is that player 1 plays first in start of the game. \
+\
+In the given matrix, top-left is [0, 0] and bottom-right is [9, 9]. The coordinate of a cell is represented by [row, column]. Rows increases from top to bottom and column increases from left to right. \
+\
+The cell marked 0 signifies that the cell is empty. The cell marked 1 means it contains one of player 1's amazons which are white in appearance. The cell marked 2 means it contains one of player 2's amazons which are black in appearance. The cell marked -1 means that it has been blocked by an arrow. \
+\
+
+\b Output
+\b0  \
+Print the coordinates [row, column] of the amazon that you wish to move. \
+In the next line, print the coordinates of cell [row, column] where you want to move your amazon to. \
+In next line, print the coordinates of cell [row, column] where you want to throw an arrow. \
+\
+
+\b Starting state
+\b0  \
+0 0 0 2 0 0 2 0 0 0\
+0 0 0 0 0 0 0 0 0 0\
+0 0 0 0 0 0 0 0 0 0\
+2 0 0 0 0 0 0 0 0 2\
+0 0 0 0 0 0 0 0 0 0\
+0 0 0 0 0 0 0 0 0 0\
+1 0 0 0 0 0 0 0 0 1\
+0 0 0 0 0 0 0 0 0 0\
+0 0 0 0 0 0 0 0 0 0\
+0 0 0 1 0 0 1 0 0 0\
+\
+
+\b Scoring
+\b0  \
+We will run intermediate tournaments at 0700 UTC everyday till the end of the contest. The tournament will be run by taking the latest valid submission of each user and a leaderboard will be generated, so that the users know where the bots stand relative to each other. You are, however, free to make any number of submissions you want to challenge other bots, but this will not affect your position in the leaderboard. \
+\
+When the contest ends, we will run a final tournament, the results of which will be final and announced on 19th January at 0700 UTC . \
+\
+The ranking on the leaderboard will be determined by Glicko2 rating system. \
+\pard\pardeftab720\sa120\ql\qnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural
+\cf0 Sample Input\
+\pard\pardeftab720\ql\qnatural
+{\field{\*\fldinst{HYPERLINK "https://he-s3.s3.amazonaws.com/media/hackathon/bot-challenge-india-hacks-2016/problems/42604c14-b-ina.txt?Signature=t7wd7HvhjrMzZuAtFmniB%2B63VxI%3D&Expires=1452456228&AWSAccessKeyId=AKIAJLE6MUHDYS3HN6YQ"}}{\fldrslt \cf3 \ul \ulc3 (Plaintext Link)}}\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f2 \cf0 0 0 0  2 0 0 2 0  0  0\
+0 0 0 -1 0 0 0 0  0  0\
+0 0 0  0 0 0 0 0  0  0\
+0 0 0  2 0 0 0 0  2  0\
+0 0 0  0 0 0 0 0  0  0\
+0 0 0 -1 0 0 0 0  0  0\
+1 0 0  1 0 0 0 0 -1  1\
+0 0 0  0 0 0 0 0  0  0\
+0 0 0  0 0 0 0 0  0  0\
+0 0 0  0 0 0 0 1  0 -1\
+1\
+\pard\pardeftab720\ql\qnatural
+
+\f0 \cf0 Sample Output\
+\pard\pardeftab720\ql\qnatural
+{\field{\*\fldinst{HYPERLINK "https://he-s3.s3.amazonaws.com/media/hackathon/bot-challenge-india-hacks-2016/problems/426944d6-b-out.txt?Signature=J6iW7014BaEy5pPw4ly%2BWwv3SA4%3D&Expires=1452456228&AWSAccessKeyId=AKIAJLE6MUHDYS3HN6YQ"}}{\fldrslt \cf3 \ul \ulc3 (Plaintext Link)}}\
+\
+\pard\pardeftab720\ql\qnatural
+
+\f2 \cf0 6 0\
+8 0\
+7 1\
+\pard\pardeftab720\ql\qnatural
+
+\f0 \cf0 \
+Explanation\
+This is player 1's turn, and the player moves his/her amazon from cell [6, 0] to cell [8, 0] and shoots the arrow on cell [7, 1]. \
+\
+After his/her move the state of game becomes: \
+\pard\pardeftab720\ql\qnatural
+
+\f2 \cf0 0  0 0  2 0 0 2 0  0  0\
+0  0 0 -1 0 0 0 0  0  0\
+0  0 0  0 0 0 0 0  0  0\
+0  0 0  2 0 0 0 0  2  0\
+0  0 0  0 0 0 0 0  0  0\
+0  0 0 -1 0 0 0 0  0  0\
+0  0 0  1 0 0 0 0 -1  1\
+0 -1 0  0 0 0 0 0  0  0\
+1  0 0  0 0 0 0 0  0  0\
+0  0 0  0 0 0 0 1  0 -1\
+\pard\pardeftab720\ql\qnatural
+
+\f0 \cf0 This generated state will be fed as input to alternate player's bot code. Again the new generated state after alternate player's bot makes a move, will be fed as input to player 1. This goes on until game is finished or aborted. \
+\pard\pardeftab720\sa120\ql\qnatural
+\cf0 \
+\pard\pardeftab720\ql\qnatural
+\cf0 Time Limit: 1 sec(s) for each input file.\
+Memory Limit: 256 MB\
+Source Limit: 1024 KB\
+Marking Scheme: Marks are awarded when all the testcases pass.\
+Allowed languages: C, CPP, CLOJURE, CSHARP, GO, HASKELL, JAVA, JAVASCRIPT, JAVASCRIPT_NODE, LISP, OBJECTIVEC, PASCAL, PERL, PHP, PYTHON, RUBY, R, RUST, SCALA\
+}

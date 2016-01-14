@@ -1,0 +1,198 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C67E5A911C42E2C800DC86EE /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C67E5A901C42E2C800DC86EE /* main.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C67E5A8A1C42E2C800DC86EE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C67E5A8C1C42E2C800DC86EE /* GameoftheAmazonsBot */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = GameoftheAmazonsBot; sourceTree = BUILT_PRODUCTS_DIR; };
+		C67E5A901C42E2C800DC86EE /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		C67E5A921C42E2C900DC86EE /* GameoftheAmazonsBot.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = GameoftheAmazonsBot.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C67E5A891C42E2C800DC86EE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C67E5A811C42E2C800DC86EE = {
+			isa = PBXGroup;
+			children = (
+				C67E5A8F1C42E2C800DC86EE /* GameoftheAmazonsBot */,
+				C67E5A8D1C42E2C800DC86EE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C67E5A8D1C42E2C800DC86EE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C67E5A8C1C42E2C800DC86EE /* GameoftheAmazonsBot */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C67E5A8F1C42E2C800DC86EE /* GameoftheAmazonsBot */ = {
+			isa = PBXGroup;
+			children = (
+				C67E5A901C42E2C800DC86EE /* main.cpp */,
+				C67E5A921C42E2C900DC86EE /* GameoftheAmazonsBot.1 */,
+			);
+			path = GameoftheAmazonsBot;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C67E5A8B1C42E2C800DC86EE /* GameoftheAmazonsBot */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C67E5A951C42E2C900DC86EE /* Build configuration list for PBXNativeTarget "GameoftheAmazonsBot" */;
+			buildPhases = (
+				C67E5A881C42E2C800DC86EE /* Sources */,
+				C67E5A891C42E2C800DC86EE /* Frameworks */,
+				C67E5A8A1C42E2C800DC86EE /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = GameoftheAmazonsBot;
+			productName = GameoftheAmazonsBot;
+			productReference = C67E5A8C1C42E2C800DC86EE /* GameoftheAmazonsBot */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C67E5A831C42E2C800DC86EE /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C67E5A861C42E2C800DC86EE /* Build configuration list for PBXProject "GameoftheAmazonsBot" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C67E5A811C42E2C800DC86EE;
+			productRefGroup = C67E5A8D1C42E2C800DC86EE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C67E5A8B1C42E2C800DC86EE /* GameoftheAmazonsBot */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C67E5A881C42E2C800DC86EE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C67E5A911C42E2C800DC86EE /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C67E5A931C42E2C900DC86EE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C67E5A941C42E2C900DC86EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C67E5A961C42E2C900DC86EE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		C67E5A971C42E2C900DC86EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C67E5A861C42E2C800DC86EE /* Build configuration list for PBXProject "GameoftheAmazonsBot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C67E5A931C42E2C900DC86EE /* Debug */,
+				C67E5A941C42E2C900DC86EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C67E5A951C42E2C900DC86EE /* Build configuration list for PBXNativeTarget "GameoftheAmazonsBot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C67E5A961C42E2C900DC86EE /* Debug */,
+				C67E5A971C42E2C900DC86EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C67E5A831C42E2C800DC86EE /* Project object */;
+}
