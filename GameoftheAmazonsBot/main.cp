@@ -18,7 +18,7 @@
 
 // -----------------------------------------------
 const int GotA_MAJOR_VERSION = 0;
-const int GotA_MINOR_VERSION = 7;
+const int GotA_MINOR_VERSION = 9;
 // -----------------------------------------------
 // -----------------------------------------------
 
@@ -29,6 +29,20 @@ struct Position
     Position(int ax, int ay){x=ax;y=ay;};
     //    Position(const  Position& a){x=a.x;y=a.y;};
     ~Position(){};
+    
+    bool operator ==(Position& other)
+    {
+        if(x == other.x && y == other.y)
+            return true;
+        return false;
+    };
+
+    bool operator !=(Position& other)
+    {
+       if(x == other.x && y == other.y)
+           return false;
+        return true;
+    };
     
 	void set(int px, int py){x=px;y=py;}; 
 	void set(Position& a){x=a.x;y=a.y;}; 
@@ -313,6 +327,48 @@ struct GotAPlayer
         else if(id == 3) to.set(Q4_moves[0]);
         
     };
+    void set_gratest_dir_move(Position& from, Position& to)
+    {
+        int dc = 0, result;
+        
+        for (int i=0; i<4; ++i) 
+        {
+            if(dir_count[i] > dc)
+            {
+                dc = dir_count[i];
+                result = i;
+            }
+        }
+        
+        from.set(Q[result]);
+        if(result == 0) to.set(Q1_moves[Q1_moves.size()/2]);
+        else if(result == 1) to.set(Q2_moves[Q2_moves.size()/2]);
+        else if(result == 2) to.set(Q3_moves[Q3_moves.size()/2]);
+        else if(result == 3) to.set(Q4_moves[Q4_moves.size()/2]);
+        
+    };
+    void set_best_move(Position& from, Position& to)
+    {
+        int dc = 0, result;
+        
+        
+        
+        for (int i=0; i<4; ++i) 
+        {
+            if(dir_count[i] > dc)
+            {
+                dc = dir_count[i];
+                result = i;
+            }
+        }
+        
+        from.set(Q[result]);
+        if(result == 0) to.set(Q1_moves[Q1_moves.size()/2]);
+        else if(result == 1) to.set(Q2_moves[Q2_moves.size()/2]);
+        else if(result == 2) to.set(Q3_moves[Q3_moves.size()/2]);
+        else if(result == 3) to.set(Q4_moves[Q4_moves.size()/2]);
+        
+    };
 };
 // -----------------------------------------------
 
@@ -368,10 +424,20 @@ struct	GotABrain
         }
 		else 
 		{
-            
+            for (int i=0; i<4; ++i) 
+            {
+                if (g.is_corner(my.Q[i])) 
+                {
+                    
+                }
+                else if (g.is_edge(my.Q[i])) 
+                {
+                    
+                }
+            }
             //todo set from and to moves with more logic
-            my.set_least_dir_move(next_move_from, next_move_to);
-			
+          //  my.set_least_dir_move(next_move_from, next_move_to);
+			my.set_gratest_dir_move(next_move_from, next_move_to);
 		};
 	};
     void proc_arrow(GotAGrid&	g)
@@ -383,7 +449,7 @@ struct	GotABrain
         
         for (int i=pap.size()-1; i>=0; --i) 
         {
-            if(g.isOpen(pap[i]))
+            if(g.isOpen(pap[i]) && pap[i] != next_move_to)
                 next_arrow = pap[i];	
         }
         
@@ -403,7 +469,7 @@ int main (int argc, const char * argv[])
 {
 	GotAGrid	grid = GotAGrid();
 	GotABrain	brain = GotABrain();
-/*/ 
+//*/ 
 	grid.scan_state();
 	brain.scan_id();
 /*/
