@@ -15,5 +15,10 @@ https://www.hackerearth.com/battle-of-bots-2/multiplayer/dots-and-boxes/
 Tic Tac Toe Problem Page:
 https://www.hackerearth.com/problem/multiplayer/tic-tac-toe/
 
+Gomoku problem Page:
+https://www.hackerearth.com/battle-of-bots-4/multiplayer/gomoku/
+or 
+https://www.hackerearth.com/problem/multiplayer/gomoku/
+
 Game Bot Chat Room Link:
 https://ibeansoftware.hipchat.com/chat/room/2175280
