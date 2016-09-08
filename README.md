@@ -1,7 +1,6 @@
 # GameBots
 Game Bots that play against other Bots Online.
 Written in C++, Coded by: Nash Bean
-Donations can be sent to: https://coinkite.com/pay/E63136E15F-0CE832
 
 Heres where you can Hack in a Game Bot
 https://www.hackerearth.com/indiahacks-2016/?utm_source=widget-ih16&utm_medium=in-app-marketing&utm_campaign=indiahacks16-inapp
