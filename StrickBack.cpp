@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 0;
+const int STRIKE_BACK_MINOR_VERSION = 1;
 
 struct Position 
 {
@@ -134,20 +134,20 @@ struct ride
                  x=last.x; y=last.y;
                  thrust = 100;
             }
-            else if(cp.dist < 60 && cv>550) thrust = 20;
-            else if(cp.dist < 80 && cv>650) thrust = 42;//was 42
-            else if(cv>750) thrust = 50;
+            else if(cp.dist < 60 && cv>570) thrust = 20;
+            else if(cp.dist < 80 && cv>640) thrust = 42;//was 42
+            else if(cv>700) thrust = 50;
             else if(cv<550) thrust =100;
             else thrust = 80;
         }
         else if(cp.turning())
-        { thrust = 50;   
+        { thrust = 47;   
             cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
         }
         else if(boost && cp.strait() && cp.dist>3000)
         {thrust=1000;
             cerr<<"cv:"<<std::to_string(cv)<<" boost"<<endl;}
-        else if(cp.simi_close(current)&& cv>100)
+        else if(cp.simi_close(current)&& cv>700)
         { thrust = 85; cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
         else
         { thrust = 100;}
