@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 4;
+const int STRIKE_BACK_MINOR_VERSION = 5;
 
 struct Position 
 {
@@ -73,7 +73,7 @@ struct checkPoint
     
     bool close(Position& aride)
     {
-        if(aride.distance(loca) < 200) return true;//was 150
+        if(aride.distance(loca) < 175) return true;//was 200 , 150 works better
         else return false;
     };
     bool simi_close(Position& aride)
@@ -81,15 +81,15 @@ struct checkPoint
         if(aride.distance(loca) < 300) return true;
         else return false;
     };
-   bool aproch_close(Position& aride)
+    bool aproch_close(Position& aride)
     {
-        if(aride.distance(loca) < 400) return true;
+        if(aride.distance(loca) < 500) return true;
         else return false;
     };
 
     bool turning()
     {
-        if(abs(angl)< 42) return false;//was 74, 72,
+        if(abs(angl)< 72) return false;//was 74, 72,
         else return true;
     };
     bool strait()
@@ -128,7 +128,7 @@ struct ride
         x=cp.loca.x; y=cp.loca.y;
         if(cp.close(current))
         {//brake
-            if(cp.dist < 20 && cv>400) 
+            if(cp.dist < 7 && cv>400) 
             {
                  x=last.x; y=last.y;
                 if(cv>100)  thrust = 100;
@@ -136,12 +136,12 @@ struct ride
             }
             else if(cp.dist < 20 && cv<400) 
             {
-                if(cv<100)  thrust = 70;
-                else if(cv<200)  thrust = 60;
-                else if(cv<300)  thrust = 50;
+                if(cv<100 && cp.angl<45)  thrust = 70;
+                else if(cv<200 && cp.angl<45)  thrust = 40;
+                else if(cv<300 && cp.angl<75)  thrust = 20;
                 else thrust = 20;// maby 40
             }
-            else if(cp.dist < 40 && (cv>400)) 
+            else if(cp.dist < 14 && (cv>400)) 
             {
              //   thrust = 20; x=last.x; y=last.y;
                  x=last.x; y=last.y;
@@ -157,7 +157,7 @@ struct ride
             else if(cv>350) thrust = 22;//was 675
             else thrust = 44;
         }
-        else if(cp.simi_close(current)&& cv<400)
+        else if(cp.simi_close(current)&& cv<200)
         { thrust = 42; 
         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
         else if(cp.simi_close(current)&& cv>400)
@@ -166,36 +166,36 @@ struct ride
         else if(cp.simi_close(current))
         { thrust = 20; 
         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
-        else if(ed < 30 && cv>300)
+ 		else if(cp.aproch_close(current))
+		{
+            if(cv > 750) thrust = 0;
+            else if(cv > 350) thrust = 20;
+            else  thrust = 30;   
+			
+		}
+
+        else if(cp.turning())
+        { 
+            int a = abs(cp.angl);
+            if(a >110 && cv > 350) thrust = 2;
+            else if(a > 110 && cv < 200) thrust = 30;// was 20 then 40
+            else if(a > 90 && cv > 350) thrust = 14; //was 350 & 14 added abve line
+            else if(a > 90 && cv < 200) thrust = 42;
+            else if(a > 60 && cv > 400) thrust = 32;
+            else if(a > 60 && cv < 200) thrust = 42;
+            else if(cv < 350) thrust = 42;
+            else if(cv > 350) thrust = 27;
+            else            thrust = 42;   
+            cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
+        }
+        else if(ed < 20 && cv>300)
         {// bump
                  x=opp.x; y=opp.y;
                  thrust = 100;
                  cerr<<"cv:"<<std::to_string(cv)<<" Bump speed"<<endl;
         }
-
-        else if(cp.turning())
-        { 
-            int a = abs(cp.angl);
-            if(a >110 && cv > 350) thrust = 20;
-            else if(a > 110 && cv < 350) thrust = 42;// was 20
-            else if(a > 90 && cv > 350) thrust = 14; //was 650 & 45 added abve line
-            else if(a > 90 && cv < 350) thrust = 52;
-            else if(a > 60 && cv > 400) thrust = 42;
-            else if(a > 60 && cv < 400) thrust = 62;
-            else if(cv < 350) thrust = 72;
-            else if(cv > 350) thrust = 27;
-            else            thrust = 42;   
-            cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
-        }
-		else if(cp.aproch_close(current))
-		{
-            if(cv > 750) thrust = 0;
-            else if(cv > 650) thrust = 80;
-            else  thrust = 90;   
-			
-		}
-        else if(boost && cp.strait() && cp.dist>3400)
-        {thrust=1000;
+       else if(boost && cp.strait() && cp.dist>3000)
+        {thrust=1000; boost=false;
             cerr<<"cv:"<<std::to_string(cv)<<" boost"<<endl;}
         else
         { thrust = 100;}
