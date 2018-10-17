@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 6;
+const int STRIKE_BACK_MINOR_VERSION = 7;
 
 struct Position 
 {
@@ -73,23 +73,23 @@ struct checkPoint
     
     bool close(Position& aride)
     {
-        if(aride.distance(loca) < 200) return true;//was 200 , 150 works better
+        if(aride.distance(loca) < 150) return true;//was 200 , 150 works better
         else return false;
     };
     bool simi_close(Position& aride)
     {
-        if(aride.distance(loca) < 300) return true;
+        if(aride.distance(loca) < 200) return true;
         else return false;
     };
     bool aproch_close(Position& aride)
     {
-        if(aride.distance(loca) < 400) return true;
+        if(aride.distance(loca) < 220) return true;
         else return false;
     };
 
     bool turning()
     {
-        if(abs(angl)< 74) return false;
+        if(abs(angl)< 45) return false;// was 74
         else return true;
     };
     bool strait()
@@ -128,7 +128,7 @@ struct ride
         x=cp.loca.x; y=cp.loca.y;
         if(cp.close(current))
         {//brake
-            if(cp.dist < 7 && cv>400) 
+            if(cp.dist < 20 && cv>400) 
             {
                  x=last.x; y=last.y;
                 if(cv>100)  thrust = 100;
@@ -151,11 +151,11 @@ struct ride
             {
                  thrust = 32;
             }
-            else if(cp.dist < 100 && cv>400) thrust = 0;//was 20
-            else if(cp.dist < 100 && cv<400) thrust = 30;//was 42
-            else if(cv>400) thrust = 2;// was 725 42
-            else if(cv>350) thrust = 22;//was 675
-            else thrust = 44;
+            else if(cp.dist < 100 && cv>550) thrust = 20;//was 20
+            else if(cp.dist < 100 && cv<550) thrust = 42;//was 42
+            else if(cv>725) thrust = 42;// was 725 42  - 400 2
+            else if(cv>675) thrust = 22;//was 675  - 350 22
+            else thrust = 80;// was 42
         }
         else if(cp.simi_close(current)&& cv<200)
         { thrust = 42; 
