@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 3;
+const int STRIKE_BACK_MINOR_VERSION = 4;
 
 struct Position 
 {
@@ -77,6 +77,11 @@ struct checkPoint
         else return false;
     };
     bool simi_close(Position& aride)
+    {
+        if(aride.distance(loca) < 300) return true;
+        else return false;
+    };
+   bool aproch_close(Position& aride)
     {
         if(aride.distance(loca) < 400) return true;
         else return false;
@@ -182,6 +187,13 @@ struct ride
             else            thrust = 42;   
             cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
         }
+		else if(cp.aproch_close(current))
+		{
+            if(cv > 750) thrust = 0;
+            else if(cv > 650) thrust = 80;
+            else  thrust = 90;   
+			
+		}
         else if(boost && cp.strait() && cp.dist>3400)
         {thrust=1000;
             cerr<<"cv:"<<std::to_string(cv)<<" boost"<<endl;}
