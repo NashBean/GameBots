@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 8;
+const int STRIKE_BACK_MINOR_VERSION = 9;
 
 struct Position 
 {
@@ -89,7 +89,7 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 45) return false;// was 74 then 45 - 35 worked
+        if(abs(angl)< 45) return false;// was 74
         else return true;
     };
     bool strait()
@@ -155,16 +155,16 @@ struct ride
             else if(cp.dist < 100 && cv<550) thrust = 42;//was 42
             else if(cv>725) thrust = 42;// was 725 42  - 400 2
             else if(cv>675) thrust = 22;//was 675  - 350 22
-            else thrust = 42;// was 42 then 80
+            else thrust = 80;// was 42
         }
         else if(cp.simi_close(current)&& cv<200)
         { thrust = 42; 
         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
-        else if(cp.simi_close(current)&& cv>550)
+        else if(cp.simi_close(current)&& cv>400)
         { thrust = 12; 
         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
         else if(cp.simi_close(current))
-        { thrust = 42; //was 20
+        { thrust = 20; 
         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
  		else if(cp.aproch_close(current))
 		{
@@ -178,18 +178,18 @@ struct ride
         { 
             int a = abs(cp.angl);
             if(a >110 && cv > 350) thrust = 2;
-            else if(a > 110 && cv < 200) thrust = 50;// was 20 then 40
+            else if(a > 110 && cv < 100) thrust = 30;// was 20 then 40
             else if(a > 90 && cv > 350) thrust = 14; //was 350 & 14 added abve line
-            else if(a > 90 && cv < 350) thrust = 42;
-            else if(a > 60 && cv > 350) thrust = 32;
-            else if(a > 60 && cv < 350) thrust = 52;
-            else if(a > 45 && cv > 350) thrust = 32;
-            else if(a > 45 && cv < 350) thrust = 52;
-            else if(a > 15 && cv > 350) thrust = 82;
-            else if(a > 15 && cv < 350) thrust = 92;
-            else if(cv < 550) thrust = 100;
-    //        else if(cv > 350) thrust = 27;
-            else            thrust = 97;//was 42   
+            else if(a > 90 && cv < 350) thrust = 17;
+            else if(a > 60 && cv > 350) thrust = 20;
+            else if(a > 60 && cv < 350) thrust = 27;
+            else if(a > 45 && cv > 350) thrust = 30;
+            else if(a > 45 && cv < 350) thrust = 37;
+            else if(a > 15 && cv > 350) thrust = 42;
+            else if(a > 15 && cv < 350) thrust = 52;
+            else if(cv > 350) thrust = 82;
+            else if(cv < 350) thrust = 92;
+            else            thrust = 97;   
             cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
         }
         else if(ed < 20 && cv>300)
