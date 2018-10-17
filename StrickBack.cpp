@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 1;
+const int STRIKE_BACK_MINOR_VERSION = 2;
 
 struct Position 
 {
@@ -84,7 +84,7 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 74) return false;
+        if(abs(angl)< 72) return false;//was 74
         else return true;
     };
     bool strait()
@@ -128,26 +128,34 @@ struct ride
                 if(cv>100)  thrust = 100;
                 else thrust = cv;
             }
-            else if(cp.dist < 50 && (cv>550)) //was < 50
+            else if(cp.dist < 50 && (cv>550)) 
             {
              //   thrust = 20; x=last.x; y=last.y;
                  x=last.x; y=last.y;
                  thrust = 100;
             }
-            else if(cp.dist < 60 && cv>570) thrust = 20;
-            else if(cp.dist < 80 && cv>640) thrust = 42;//was 42
-            else if(cv>700) thrust = 50;
-            else if(cv<550) thrust =100;
+            else if(cp.dist < 60 && cv>600) thrust = 20;
+            else if(cp.dist < 80 && cv>700) thrust = 42;//was 42
+            else if(cv>725) thrust = 50;
+            else if(cv<675) thrust =100;
             else thrust = 80;
         }
         else if(cp.turning())
-        { thrust = 47;   
+        { 
+            int a = abs(cp.angl);
+            if(a >110 && cv > 550) thrust = 20;
+            else if(a > 90 && cv > 600) thrust = 40;
+            else if(a > 80 && cv > 700) thrust = 50;
+            else if(a > 70 && cv > 700) thrust = 60;
+            else if(cv < 600) thrust = 80;
+            else if(cv < 550) thrust = 100;
+            else            thrust = 70;   
             cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
         }
         else if(boost && cp.strait() && cp.dist>3000)
         {thrust=1000;
             cerr<<"cv:"<<std::to_string(cv)<<" boost"<<endl;}
-        else if(cp.simi_close(current)&& cv>700)
+        else if(cp.simi_close(current)&& cv>100)
         { thrust = 85; cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
         else
         { thrust = 100;}
@@ -191,3 +199,4 @@ int main()
       }
 }
 //-------------------------------------------------------------------
+
