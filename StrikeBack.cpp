@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 5;
+const int STRIKE_BACK_MINOR_VERSION = 6;
 
 struct Position 
 {
@@ -73,7 +73,7 @@ struct checkPoint
     
     bool close(Position& aride)
     {
-        if(aride.distance(loca) < 175) return true;//was 200 , 150 works better
+        if(aride.distance(loca) < 200) return true;//was 200 , 150 works better
         else return false;
     };
     bool simi_close(Position& aride)
@@ -83,13 +83,13 @@ struct checkPoint
     };
     bool aproch_close(Position& aride)
     {
-        if(aride.distance(loca) < 500) return true;
+        if(aride.distance(loca) < 400) return true;
         else return false;
     };
 
     bool turning()
     {
-        if(abs(angl)< 72) return false;//was 74, 72,
+        if(abs(angl)< 74) return false;
         else return true;
     };
     bool strait()
@@ -136,7 +136,7 @@ struct ride
             }
             else if(cp.dist < 20 && cv<400) 
             {
-                if(cv<100 && cp.angl<45)  thrust = 70;
+                if(cv<100 && cp.angl<5)  thrust = 70;
                 else if(cv<200 && cp.angl<45)  thrust = 40;
                 else if(cv<300 && cp.angl<75)  thrust = 20;
                 else thrust = 20;// maby 40
@@ -168,9 +168,9 @@ struct ride
         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
  		else if(cp.aproch_close(current))
 		{
-            if(cv > 750) thrust = 0;
-            else if(cv > 350) thrust = 20;
-            else  thrust = 30;   
+            if(cv > 750) thrust = 70;
+            else if(cv > 350) thrust = 80;
+            else  thrust = 100;   
 			
 		}
 
