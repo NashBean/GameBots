@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 0;
+const int STRIKE_BACK_MINOR_VERSION = 1;
 
 struct Position 
 {
@@ -89,7 +89,7 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 45) return false;// was 74 was last 45 working
+        if(abs(angl)< 10) return false;// was 74 was last 45 working
         else return true;
     };
     bool strait()
@@ -108,13 +108,13 @@ struct ride
     int x,y,thrust;
     int nexdtX, nextY;
     bool boost=true;
-    int aproch_cv = 550;
-    int break_cv = 200;
-    int close_cv = 300;
-    int simi_close_cv = 400;// was 200 & 400
+    int aproch_cv = 450;
+    int break_cv = 150;
+    int close_cv = 200;
+    int simi_close_cv = 300;// was 200 & 400
     int turn_around_cv = 200;
-    int drift_cv = 550;
-    int stear_cv = 750;
+    int drift_cv = 400;
+    int stear_cv = 500;
     
     
     void loopData(int ix, int iy, int cpx, int cpy, int cpd, int cpa, int oppx, int oppy)
