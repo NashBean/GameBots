@@ -6,8 +6,8 @@
 using namespace std;
 
 //-------------------------------------------------------------------
-const int STRIKE_BACK_MAJOR_VERSION = 1;
-const int STRIKE_BACK_MINOR_VERSION = 9;
+const int STRIKE_BACK_MAJOR_VERSION = 2;
+const int STRIKE_BACK_MINOR_VERSION = 0;
 
 struct Position 
 {
@@ -73,23 +73,23 @@ struct checkPoint
     
     bool close(Position& aride)
     {
-        if(aride.distance(loca) < 150) return true;//was 200 , 150 works better
+        if(aride.distance(loca) < 200) return true;//was 200 , 150 works better
         else return false;
     };
     bool simi_close(Position& aride)
     {
-        if(aride.distance(loca) < 200) return true;
+        if(aride.distance(loca) < 300) return true;
         else return false;
     };
     bool aproch_close(Position& aride)
     {
-        if(aride.distance(loca) < 220) return true;
+        if(aride.distance(loca) < 320) return true;
         else return false;
     };
 
     bool turning()
     {
-        if(abs(angl)< 45) return false;// was 74
+        if(abs(angl)< 45) return false;// was 74 was last 45 working
         else return true;
     };
     bool strait()
@@ -108,6 +108,14 @@ struct ride
     int x,y,thrust;
     int nexdtX, nextY;
     bool boost=true;
+    int aproch_cv = 550;
+    int break_cv = 200;
+    int close_cv = 300;
+    int simi_close_cv = 400;// was 200 & 400
+    int turn_around_cv = 200;
+    int drift_cv = 550;
+    int stear_cv = 750;
+    
     
     void loopData(int ix, int iy, int cpx, int cpy, int cpd, int cpa, int oppx, int oppy)
     {
@@ -119,6 +127,25 @@ struct ride
         opp.set(oppx,oppy);
     };
     
+    void bump_up_thrust()
+    {
+        if(thrust<96)  thrust += 5;
+        else thrust =100;    
+    };
+
+    void bump_down_thrust()
+    {
+        if(thrust>5)  thrust -= 5;
+        else thrust = 0;    
+    };
+
+    void reverse_thrust()
+    {
+        x=last.x; y=last.y;
+        if(cv>100)  thrust = 100;
+        else thrust =20;    
+    };
+    
     std::string getResult()
     {
         std::string result=std::string();
@@ -128,71 +155,101 @@ struct ride
         x=cp.loca.x; y=cp.loca.y;
         if(cp.close(current))
         {//brake
-            if(cp.dist < 20 && cv>400) 
+        
+            if(cp.dist < 20)//was20
             {
-                 x=last.x; y=last.y;
-                if(cv>100)  thrust = 100;
-                else thrust = cv;
+                if(cv > (break_cv-100)) reverse_thrust();
+                else if(cv < break_cv) bump_up_thrust();
+                else if(cv > break_cv) bump_down_thrust();
             }
+            else if(cp.dist < 50)
+            {
+                if(cv < break_cv) bump_up_thrust();
+                else if(cv > break_cv) bump_down_thrust();
+            }
+            else if(cp.dist < 100)
+            {
+                if(cv < close_cv) bump_up_thrust();
+                else if(cv > close_cv) bump_down_thrust();
+            }
+            
+   /*         
+            if(cp.dist < 20 && cv>400)  {reverse_thrust(); }
             else if(cp.dist < 20 && cv<400) 
             {
                 if(cv<100 && cp.angl<5)  thrust = 70;
-                else if(cv<200 && cp.angl<45)  thrust = 40;
-                else if(cv<300 && cp.angl<75)  thrust = 20;
-                else thrust = 20;// maby 40
+                else if(cv<200 && cp.angl<14)  thrust = 40;
+                else if(cv<300 && cp.angl>30)  thrust = 20;
+                else thrust = 30;// maby 40
             }
             else if(cp.dist < 14 && (cv>400)) 
-            {
-             //   thrust = 20; x=last.x; y=last.y;
-                 x=last.x; y=last.y;
-                 thrust = 100;
-            }
-            else if(cp.dist < 50 && (cv<400)) 
+            {reverse_thrust();}
+            else if(cp.dist < 50 && (cv<200)) 
             {
                  thrust = 32;
             }
-            else if(cp.dist < 100 && cv>550) thrust = 20;//was 20
-            else if(cp.dist < 100 && cv<550) thrust = 42;//was 42
-            else if(cv>725) thrust = 42;// was 725 42  - 400 2
-            else if(cv>675) thrust = 22;//was 675  - 350 22
-            else thrust = 80;// was 42
+            else if(cp.dist < 50 && cv>550) reverse_thrust();//was 20
+            else if(cp.dist < 100 && cv<450) bump_up_thrust();//thrust = 42;//was 42
+            else if(cp.dist < 100 && cv>600) reverse_thrust() ;// last 2 was 725 42  - 400 2
+            //else if(cv>725) thrust = 2;// was 725 42  - 400 2
+            //else if(cv>675) thrust = 22;//was 675  - 350 22
+            else thrust = 20;// was 42
+            //*/
         }
-        else if(cp.simi_close(current)&& cv<200)
-        { thrust = 42; 
-        cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
-        else if(cp.simi_close(current)&& cv>400)
-        { thrust = 12; 
-        cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
+       // else if(cp.simi_close(current)&& cv<simi_close_cv  )//200)        { bump_up_thrust//thrust = 22;         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
+       // else if(cp.simi_close(current)&& cv>simi_close_cv)//400) bump_down_thrust()//thrust = 12;       cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
+        
         else if(cp.simi_close(current))
-        { thrust = 20; 
-        cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
+        { 
+            if(cv<simi_close_cv) bump_up_thrust();
+            else if(cv>simi_close_cv) bump_down_thrust();
+            cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;
+        }
+        
  		else if(cp.aproch_close(current))
 		{
-            if(cv > 750) thrust = 70;
-            else if(cv > 350) thrust = 80;
-            else  thrust = 100;   
-			
+            if(cv<aproch_cv) bump_up_thrust();
+            else if(cv>aproch_cv) bump_down_thrust();
+           // if(cv > 750) thrust = 70; else if(cv > 350) thrust = 80; else  thrust = 100;   
 		}
 
         else if(cp.turning())
         { 
             int a = abs(cp.angl);
-            if(a >110 && cv > 350) thrust = 2;
-            else if(a > 110 && cv < 100) thrust = 30;// was 20 then 40
-            else if(a > 90 && cv > 350) thrust = 14; //was 350 & 14 added abve line
-            else if(a > 90 && cv < 350) thrust = 17;
-            else if(a > 60 && cv > 350) thrust = 20;
-            else if(a > 60 && cv < 350) thrust = 27;
-            else if(a > 45 && cv > 350) thrust = 30;
-            else if(a > 45 && cv < 350) thrust = 37;
-            else if(a > 15 && cv > 350) thrust = 42;
-            else if(a > 15 && cv < 350) thrust = 52;
-            else if(cv > 350) thrust = 82;
-            else if(cv < 350) thrust = 92;
-            else            thrust = 97;   
+
+            if(a<45)
+            {
+            if(cv<stear_cv) bump_up_thrust();
+            else if(cv>stear_cv) bump_down_thrust();
+            }
+
+            if(a<91)
+            {
+            if(cv<drift_cv) bump_up_thrust();
+            else if(cv>drift_cv) bump_down_thrust();
+            }
+            else
+            {
+            if(cv<turn_around_cv) bump_up_thrust();
+            else if(cv>turn_around_cv) bump_down_thrust();
+            }
+            
+        //    if(a >110 && cv > 350) thrust = 2;
+        //    else if(a > 110 && cv < 100) thrust = 20;// was 20 then 40
+        //    else if(a > 90 && cv > 350) thrust = 14; //was 350 & 14 added abve line
+        //    else if(a > 90 && cv < 350) thrust = 14;
+        //    else if(a > 60 && cv > 350) thrust = 20;
+        //    else if(a > 60 && cv < 350) thrust = 20;
+        //    else if(a > 45 && cv > 350) thrust = 22;
+        //    else if(a > 45 && cv < 350) thrust = 32;
+        //    else if(a > 15 && cv > 350) thrust = 22;
+        //    else if(a > 15 && cv < 350) thrust = 32;
+        //    else if(cv > 350) thrust = 22;
+        //    else if(cv < 350) thrust = 42;
+        //    else            thrust = 30;   
             cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
         }
-        else if(ed < 20 && cv>300)
+        else if(ed < 20)// && cv>200)
         {// bump
                  x=opp.x; y=opp.y;
                  thrust = 100;
