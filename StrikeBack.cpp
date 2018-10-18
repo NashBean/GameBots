@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 3;
+const int STRIKE_BACK_MINOR_VERSION = 4;
 
 struct Position 
 {
@@ -73,28 +73,28 @@ struct checkPoint
     
     bool close(Position& aride)
     {
-        if(aride.distance(loca) < 200) return true;//was 200 , 150 works better
+        if(aride.distance(loca) < 100) return true;//was 200 , 150 works better
         else return false;
     };
     bool simi_close(Position& aride)
     {
-        if(aride.distance(loca) < 300) return true;
+        if(aride.distance(loca) < 150) return true;//300
         else return false;
     };
     bool aproch_close(Position& aride)
     {
-        if(aride.distance(loca) < 320) return true;
+        if(aride.distance(loca) < 200) return true;//320
         else return false;
     };
 
     bool turning()
     {
-        if(abs(angl)< 25) return false;// was 74 was last 45 working
+        if(abs(angl)< 10) return false;// was 74 was last 45 working
         else return true;
     };
     bool strait()
     {
-        if(abs(angl)<= 3) return true;
+        if(abs(angl)<= 10) return true;
         else return false;
     };
 };
@@ -109,12 +109,14 @@ struct ride
     int reset_thrust=0;
     bool boost=true;
     int aproch_cv = 300;//250 450
-    int break_cv = 100;
+    int break_cv = 50;
     int close_cv = 175;
     int simi_close_cv = 250;// was 200 & 400
-    int turn_around_cv = 175;
-    int drift_cv = 400;
-    int stear_cv = 500;
+    int turn_around_cv = 100;
+    int drift_cv = 200;
+    int stear_cv = 300;
+    
+    vector<checkPoint> cp_lst;
     
     
     void loopData(int ix, int iy, int cpx, int cpy, int cpd, int cpa, int oppx, int oppy)
@@ -125,6 +127,10 @@ struct ride
         cp.set(cpx,cpy,cpd,cpa);
         oppLast.set(opp);
         opp.set(oppx,oppy);
+        
+        if(reset_thrust) {  thrust=reset_thrust; reset_thrust=0;}
+        if(cp.loca != cpLast.loca) thrust = 0;
+        
     };
     
     void bump_up_thrust()
@@ -155,20 +161,20 @@ struct ride
         
         x=cp.loca.x; y=cp.loca.y;
         
-        if(reset_thrust) {  thrust=reset_thrust; reset_thrust=0;}
         
         if(cp.close(current))
         {//brake
         
-            if(cp.dist < 35)//was20
+            if(cp.dist < 7)//was20
             {
-                if(cv > (break_cv+100)) reverse_thrust();
+                if(cv > (break_cv+10)) reverse_thrust();
                 else if(cv < break_cv) bump_up_thrust();
                 else if(cv > break_cv) bump_down_thrust();
             }
-            else if(cp.dist < 70)//50
+            else if(cp.dist < 14)//50
             {
-                if(cv < break_cv) bump_up_thrust();
+                if(cv > (break_cv+20)) bump_up_thrust();
+                else if(cv < break_cv) bump_up_thrust();
                 else if(cv > break_cv) bump_down_thrust();
             }
             else 
@@ -221,23 +227,25 @@ struct ride
         { 
             int a = abs(cp.angl);
 
-            if(a<45)
-            {
-            if(cv<stear_cv) bump_up_thrust();
-            else if(cv>stear_cv) bump_down_thrust();
-            }
+            if(a>155) thrust=7;
+            else if(a>125) thrust=14;
+            else if(a>110) thrust=24;
+            else if(a>90) thrust=34;
+            else if(a>55) thrust=44;
+            else if(a>45) thrust=47;
+            else if(a>35)thrust=54;
+            else if(a>25)thrust=57;
+            else if(a>15)thrust=64;
+            else thrust=67;
+  
+  
+        if(a>120 && a<165 && cv < turn_around_cv) bump_up_thrust();
+        else if(a>120 && a<165  && cv > turn_around_cv) bump_down_thrust();
+        else if(a>90 && a<121  && cv < drift_cv) bump_up_thrust();
+        else if(a>90 && a<121  && cv > drift_cv) bump_down_thrust();
+        else if(a<91 && cv < stear_cv) bump_up_thrust();
+        else if(a<91 && cv > stear_cv) bump_down_thrust();
 
-            if(a<91)
-            {
-            if(cv<drift_cv) bump_up_thrust();
-            else if(cv>drift_cv) bump_down_thrust();
-            }
-            else
-            {
-            if(cv<turn_around_cv) bump_up_thrust();
-            else if(cv>turn_around_cv) bump_down_thrust();
-            }
-            
         //    if(a >110 && cv > 350) thrust = 2;
         //    else if(a > 110 && cv < 100) thrust = 20;// was 20 then 40
         //    else if(a > 90 && cv > 350) thrust = 14; //was 350 & 14 added abve line
@@ -253,7 +261,7 @@ struct ride
         //    else            thrust = 30;   
             cerr<<"cv:"<<cv<<" turning thrust "<< thrust <<endl;
         }
-        else if(ed < 25)// && cv>200)
+        else if(ed < 35)// && cv>200)was 25
         {// bump
             reset_thrust = thrust;
                  x=opp.x; y=opp.y;
