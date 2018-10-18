@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 1;
+const int STRIKE_BACK_MINOR_VERSION = 2;
 
 struct Position 
 {
@@ -89,12 +89,12 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 10) return false;// was 74 was last 45 working
+        if(abs(angl)< 25) return false;// was 74 was last 45 working
         else return true;
     };
     bool strait()
     {
-        if(abs(angl)== 0) return true;
+        if(abs(angl)<= 3) return true;
         else return false;
     };
 };
@@ -108,11 +108,11 @@ struct ride
     int x,y,thrust;
     int nexdtX, nextY;
     bool boost=true;
-    int aproch_cv = 450;
-    int break_cv = 150;
-    int close_cv = 200;
-    int simi_close_cv = 300;// was 200 & 400
-    int turn_around_cv = 200;
+    int aproch_cv = 250;//450
+    int break_cv = 100;
+    int close_cv = 150;
+    int simi_close_cv = 200;// was 200 & 400
+    int turn_around_cv = 175;
     int drift_cv = 400;
     int stear_cv = 500;
     
@@ -156,18 +156,18 @@ struct ride
         if(cp.close(current))
         {//brake
         
-            if(cp.dist < 20)//was20
+            if(cp.dist < 35)//was20
             {
-                if(cv > (break_cv-100)) reverse_thrust();
+                if(cv > (break_cv+100)) reverse_thrust();
                 else if(cv < break_cv) bump_up_thrust();
                 else if(cv > break_cv) bump_down_thrust();
             }
-            else if(cp.dist < 50)
+            else if(cp.dist < 70)//50
             {
                 if(cv < break_cv) bump_up_thrust();
                 else if(cv > break_cv) bump_down_thrust();
             }
-            else if(cp.dist < 100)
+            else 
             {
                 if(cv < close_cv) bump_up_thrust();
                 else if(cv > close_cv) bump_down_thrust();
@@ -247,9 +247,9 @@ struct ride
         //    else if(cv > 350) thrust = 22;
         //    else if(cv < 350) thrust = 42;
         //    else            thrust = 30;   
-            cerr<<"cv:"<<std::to_string(cv)<<" turning 0 thrust"<<endl;
+            cerr<<"cv:"<<cv<<" turning thrust "<< thrust <<endl;
         }
-        else if(ed < 20)// && cv>200)
+        else if(ed < 25)// && cv>200)
         {// bump
                  x=opp.x; y=opp.y;
                  thrust = 100;
