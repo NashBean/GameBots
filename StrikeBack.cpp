@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 4;
+const int STRIKE_BACK_MINOR_VERSION = 5;
 
 struct Position 
 {
@@ -89,12 +89,12 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 10) return false;// was 74 was last 45 working
+        if(abs(angl)< 15) return false;// was 74 was last 45 working
         else return true;
     };
     bool strait()
     {
-        if(abs(angl)<= 10) return true;
+        if(abs(angl)<= 15) return true;
         else return false;
     };
 };
@@ -112,8 +112,8 @@ struct ride
     int break_cv = 50;
     int close_cv = 175;
     int simi_close_cv = 250;// was 200 & 400
-    int turn_around_cv = 100;
-    int drift_cv = 200;
+    int turn_around_cv = 50;
+    int drift_cv = 150;
     int stear_cv = 300;
     
     vector<checkPoint> cp_lst;
