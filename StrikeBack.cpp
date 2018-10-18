@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 2;
+const int STRIKE_BACK_MINOR_VERSION = 3;
 
 struct Position 
 {
@@ -106,12 +106,12 @@ struct ride
     checkPoint cp, cpLast;
     int cv, ed; // costant valosaty, enamy distance
     int x,y,thrust;
-    int nexdtX, nextY;
+    int reset_thrust=0;
     bool boost=true;
-    int aproch_cv = 250;//450
+    int aproch_cv = 300;//250 450
     int break_cv = 100;
-    int close_cv = 150;
-    int simi_close_cv = 200;// was 200 & 400
+    int close_cv = 175;
+    int simi_close_cv = 250;// was 200 & 400
     int turn_around_cv = 175;
     int drift_cv = 400;
     int stear_cv = 500;
@@ -141,6 +141,7 @@ struct ride
 
     void reverse_thrust()
     {
+        reset_thrust = thrust;
         x=last.x; y=last.y;
         if(cv>100)  thrust = 100;
         else thrust =20;    
@@ -153,6 +154,9 @@ struct ride
         ed = opp.distance(current);
         
         x=cp.loca.x; y=cp.loca.y;
+        
+        if(reset_thrust) {  thrust=reset_thrust; reset_thrust=0;}
+        
         if(cp.close(current))
         {//brake
         
@@ -251,12 +255,13 @@ struct ride
         }
         else if(ed < 25)// && cv>200)
         {// bump
+            reset_thrust = thrust;
                  x=opp.x; y=opp.y;
                  thrust = 100;
                  cerr<<"cv:"<<std::to_string(cv)<<" Bump speed"<<endl;
         }
        else if(boost && cp.strait() && cp.dist>3000)
-        {thrust=1000; boost=false;
+        {reset_thrust=thrust; thrust=1000; boost=false;
             cerr<<"cv:"<<std::to_string(cv)<<" boost"<<endl;}
         else
         { thrust = 100;}
