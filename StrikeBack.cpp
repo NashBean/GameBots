@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 6;
+const int STRIKE_BACK_MINOR_VERSION = 8;
 
 struct Position 
 {
@@ -109,12 +109,14 @@ struct ride
     int reset_thrust=0;
     bool boost=true;
     int aproch_cv = 300;//250 450
-    int break_cv = 50;
-    int close_cv = 175;
-    int simi_close_cv = 250;// was 200 & 400
-    int turn_around_cv = 50;
-    int drift_cv = 150;
-    int stear_cv = 300;
+    int break_cv = 100;
+    int close_cv = 150;
+    int simi_close_cv = 200;// was 200 & 400
+    int u_turn_cv = 100;
+    int turn_around_cv = 200;
+    int drift_cv = 550;
+    int stear_cv = 750;
+    int fly_cv = 1000;
     
     vector<checkPoint> cp_lst;
     
@@ -129,28 +131,31 @@ struct ride
         opp.set(oppx,oppy);
         
         if(reset_thrust) {  thrust=reset_thrust; reset_thrust=0;}
-        if(cp.loca != cpLast.loca) thrust = 0;
+        if(cp.loca != cpLast.loca) thrust = 14;
         
     };
     
     void bump_up_thrust()
     {
-        if(thrust<96)  thrust += 5;
+        if(thrust<95)  thrust += 5;
         else thrust =100;    
+        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
     };
 
     void bump_down_thrust()
     {
         if(thrust>5)  thrust -= 5;
-        else thrust = 0;    
+        else thrust = 1;    
+        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
     };
 
     void reverse_thrust()
     {
         reset_thrust = thrust;
         x=last.x; y=last.y;
-        if(cv>100)  thrust = 100;
-        else thrust =20;    
+        if(cv>300)  thrust = 100;
+        else thrust =50;    
+        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
     };
     
     std::string getResult()
@@ -227,24 +232,26 @@ struct ride
         { 
             int a = abs(cp.angl);
 
-            if(a>155) thrust=7;
-            else if(a>125) thrust=14;
-            else if(a>110) thrust=24;
-            else if(a>90) thrust=34;
-            else if(a>55) thrust=44;
-            else if(a>45) thrust=47;
-            else if(a>35)thrust=54;
-            else if(a>25)thrust=57;
-            else if(a>15)thrust=64;
-            else thrust=67;
+           // else if(a>125) thrust=14;
+           // else if(a>110) thrust=24;
+            //else if(a>90) thrust=34;
+            //else if(a>55) thrust=44;
+            //else if(a>45) thrust=47;
+            //else if(a>35)thrust=54;
+           // else if(a>25)thrust=57;
+            //else if(a>15)thrust=64;
+            //else thrust=67;
   
-  
-        if(a>120 && a<165 && cv < turn_around_cv) bump_up_thrust();
-        else if(a>120 && a<165  && cv > turn_around_cv) bump_down_thrust();
-        else if(a>90 && a<121  && cv < drift_cv) bump_up_thrust();
-        else if(a>90 && a<121  && cv > drift_cv) bump_down_thrust();
-        else if(a<91 && cv < stear_cv) bump_up_thrust();
-        else if(a<91 && cv > stear_cv) bump_down_thrust();
+        if(a>110 && cv < u_turn_cv)bump_up_thrust();
+        else if(a>110 && cv > u_turn_cv) bump_down_thrust();
+        else if(a>50 && cv < turn_around_cv) bump_up_thrust();
+        else if(a>50 && cv > turn_around_cv) bump_down_thrust();
+        else if(a>36  && cv < drift_cv) bump_up_thrust();
+        else if(a>36  && cv > drift_cv) bump_down_thrust();
+        else if(a>2 && cv < stear_cv) bump_up_thrust();
+        else if(a>2 && cv > stear_cv) bump_down_thrust();
+        else if(cv < fly_cv) bump_up_thrust();
+        else if(cv > fly_cv) bump_down_thrust();
 
         //    if(a >110 && cv > 350) thrust = 2;
         //    else if(a > 110 && cv < 100) thrust = 20;// was 20 then 40
@@ -259,18 +266,19 @@ struct ride
         //    else if(cv > 350) thrust = 22;
         //    else if(cv < 350) thrust = 42;
         //    else            thrust = 30;   
-            cerr<<"cv:"<<cv<<" turning thrust "<< thrust <<endl;
+         cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl << " turning"<<endl;
         }
         else if(ed < 35)// && cv>200)was 25
         {// bump
             reset_thrust = thrust;
                  x=opp.x; y=opp.y;
                  thrust = 100;
-                 cerr<<"cv:"<<std::to_string(cv)<<" Bump speed"<<endl;
+        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl << " thrust bump"<<endl;
         }
        else if(boost && cp.strait() && cp.dist>3000)
         {reset_thrust=thrust; thrust=1000; boost=false;
-            cerr<<"cv:"<<std::to_string(cv)<<" boost"<<endl;}
+        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
+        }
         else
         { thrust = 100;}
         
@@ -279,7 +287,9 @@ struct ride
         else
         {   result = std::to_string(x) +" "+ std::to_string(y) +" "+ std::to_string(thrust);}
 
+        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
         return result; 
+        
         
     };
     
