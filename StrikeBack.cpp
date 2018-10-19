@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 13;
+const int STRIKE_BACK_MINOR_VERSION = 14;
 
 struct Position 
 {
@@ -220,15 +220,15 @@ struct ride
   
             if(a>170 && cv < u_turn1_cv)bump_up_thrust();
             else if(a>170 && cv > u_turn1_cv) bump_down_thrust();
-            else if(a>160 && cv < u_turn2_cv)bump_up_thrust();
-            else if(a>160 && cv > u_turn2_cv) bump_down_thrust();
-            else if(a>140 && cv < u_turn3_cv)bump_up_thrust();
-            else if(a>140 && cv > u_turn3_cv) bump_down_thrust();
+            else if(a>140 && cv < u_turn2_cv)bump_up_thrust();
+            else if(a>140 && cv > u_turn2_cv) bump_down_thrust();
+            else if(a>120 && cv < u_turn3_cv)bump_up_thrust();
+            else if(a>120 && cv > u_turn3_cv) bump_down_thrust();
             
-            else if(a>120 && cv < turn_around1_cv) bump_up_thrust();
-            else if(a>120 && cv > turn_around1_cv) bump_down_thrust();
-            else if(a>100 && cv < turn_around2_cv) bump_up_thrust();
-            else if(a>100 && cv > turn_around2_cv) bump_down_thrust();
+            else if(a>100 && cv < turn_around1_cv) bump_up_thrust();
+            else if(a>100 && cv > turn_around1_cv) bump_down_thrust();
+            else if(a>90 && cv < turn_around2_cv) bump_up_thrust();
+            else if(a>90 && cv > turn_around2_cv) bump_down_thrust();
             else if(a>75 && cv < turn_around3_cv) bump_up_thrust();
             else if(a>75 && cv > turn_around3_cv) bump_down_thrust();
     
