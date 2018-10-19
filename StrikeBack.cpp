@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 7;
+const int STRIKE_BACK_MINOR_VERSION = 7b;
 
 struct Position 
 {
@@ -113,9 +113,9 @@ struct ride
     int close_cv = 150;
     int simi_close_cv = 200;// was 200 & 400
     int u_turn_cv = 160;
-    int turn_around_cv = 300;
-    int drift_cv = 600;
-    int stear_cv = 750;
+    int turn_around_cv = 250;
+    int drift_cv = 500;
+    int stear_cv = 700;
     int fly_cv = 900;
     
     vector<checkPoint> cp_lst;
