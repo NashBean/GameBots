@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 3;
-const int STRIKE_BACK_MINOR_VERSION = 3;
+const int STRIKE_BACK_MINOR_VERSION = 5;
 
 struct Position 
 {
@@ -78,7 +78,7 @@ struct checkPoint
     };
     bool simi_close(Position& aride)
     {
-        if(aride.distance(loca) < 300) return true;//300
+        if(aride.distance(loca) < 400) return true;//300
         else return false;
     };
     bool approach_close(Position& aride)
@@ -112,11 +112,11 @@ struct ride
     int break_cv = 100;
     int close_cv = 150;
     int simi_close_cv = 200;// was 200 & 400
-    int u_turn1_cv = 100;
-    int u_turn2_cv = 125;
-    int u_turn3_cv = 150;
-    int turn_around1_cv = 200;
-    int turn_around2_cv = 250;
+    int u_turn1_cv = 75;
+    int u_turn2_cv = 100;
+    int u_turn3_cv = 125;
+    int turn_around1_cv = 150;
+    int turn_around2_cv = 200;
     int turn_around3_cv = 300;
     int drift1_cv = 350;
     int drift2_cv = 450;
@@ -195,7 +195,7 @@ struct ride
 
     void bump_down_thrust()
     {
-        if(thrust>3)  thrust -= 3;
+        if(thrust>3)  thrust -= 5;
         else thrust = 0;    
     };
 
@@ -222,6 +222,7 @@ struct ride
 	
 	void brake()
 	{//brake
+		
 		if(cp.dist < 20 && (cv>400)) {if(cv>100) reverse_thrust(100); else reverse_thrust(cv);}
 		else if(cp.dist < 20 && cv<400) {if(cv<100) thrust=70; else if(cv<200) thrust=60; else if(cv<300) thrust=50; else thrust=20;} 
 		else if(cp.dist < 40 && cv>400) {reverse_thrust(100);}
