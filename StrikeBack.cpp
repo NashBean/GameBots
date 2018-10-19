@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 3;
-const int STRIKE_BACK_MINOR_VERSION = 1;
+const int STRIKE_BACK_MINOR_VERSION = 2;
 
 struct Position 
 {
@@ -89,7 +89,7 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 12) return false;//42 was best was 74 was last 45 working
+        if(abs(angl)< 42) return false;//42 was best was 74 was last 45 working
         else return true;
     };
     bool strait()
@@ -263,7 +263,19 @@ struct ride
         else if(ed < 30 && cv>300)
         { 	bump_opp(); }
         else if(cp.turning())// turning
-        { 	adj_turn_speed(); }
+        {// 	adj_turn_speed(); 
+	            int a = abs(cp.angl);
+            if(a >110 && cv > 350) thrust = 20;
+            else if(a > 110 && cv < 350) thrust = 42;// was 20
+            else if(a > 90 && cv > 350) thrust = 14; //was 650 & 45 added abve line
+            else if(a > 90 && cv < 350) thrust = 52;
+            else if(a > 60 && cv > 400) thrust = 42;
+            else if(a > 60 && cv < 400) thrust = 62;
+            else if(cv < 350) thrust = 72;
+            else if(cv > 350) thrust = 27;
+            else            thrust = 42;   
+	
+		}
  		else if(cp.approach_close(current))
 		{ 	approach(); }
         else if(boost && cp.strait() && cp.dist>3400)
