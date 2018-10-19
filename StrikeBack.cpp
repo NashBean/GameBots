@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 3;
-const int STRIKE_BACK_MINOR_VERSION = 2;
+const int STRIKE_BACK_MINOR_VERSION = 3;
 
 struct Position 
 {
@@ -89,7 +89,7 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 42) return false;//42 was best was 74 was last 45 working
+        if(abs(angl)< 12) return false;//42 was best was 74 was last 45 working
         else return true;
     };
     bool strait()
@@ -118,9 +118,9 @@ struct ride
     int turn_around1_cv = 200;
     int turn_around2_cv = 250;
     int turn_around3_cv = 300;
-    int drift1_cv = 450;
-    int drift2_cv = 550;
-    int drift3_cv = 600;
+    int drift1_cv = 350;
+    int drift2_cv = 450;
+    int drift3_cv = 500;
     int stear1_cv = 650;
     int stear2_cv = 700;
     int stear3_cv = 750;
@@ -153,15 +153,15 @@ struct ride
 		else if(a>120 && cv < u_turn3_cv)bump_up_thrust();
 		else if(a>120 && cv > u_turn3_cv) bump_down_thrust();
 		
-		else if(a>100 && cv < turn_around1_cv) bump_up_thrust();
-		else if(a>100 && cv > turn_around1_cv) bump_down_thrust();
-		else if(a>90 && cv < turn_around2_cv) bump_up_thrust();
-		else if(a>90 && cv > turn_around2_cv) bump_down_thrust();
-		else if(a>75 && cv < turn_around3_cv) bump_up_thrust();
-		else if(a>75 && cv > turn_around3_cv) bump_down_thrust();
+		else if(a>90 && cv < turn_around1_cv) bump_up_thrust();
+		else if(a>90 && cv > turn_around1_cv) bump_down_thrust();
+		else if(a>75 && cv < turn_around2_cv) bump_up_thrust();
+		else if(a>75 && cv > turn_around2_cv) bump_down_thrust();
+		else if(a>55 && cv < turn_around3_cv) bump_up_thrust();
+		else if(a>55 && cv > turn_around3_cv) bump_down_thrust();
 
-		else if(a>55  && cv < drift1_cv) bump_up_thrust();
-		else if(a>55  && cv > drift1_cv) bump_down_thrust();
+		else if(a>40  && cv < drift1_cv) bump_up_thrust();
+		else if(a>40  && cv > drift1_cv) bump_down_thrust();
 		else if(a>30  && cv < drift2_cv) bump_up_thrust();
 		else if(a>30  && cv > drift2_cv) bump_down_thrust();
 		else if(a>20  && cv < drift3_cv) bump_up_thrust();
@@ -263,19 +263,7 @@ struct ride
         else if(ed < 30 && cv>300)
         { 	bump_opp(); }
         else if(cp.turning())// turning
-        {// 	adj_turn_speed(); 
-	            int a = abs(cp.angl);
-            if(a >110 && cv > 350) thrust = 20;
-            else if(a > 110 && cv < 350) thrust = 42;// was 20
-            else if(a > 90 && cv > 350) thrust = 14; //was 650 & 45 added abve line
-            else if(a > 90 && cv < 350) thrust = 52;
-            else if(a > 60 && cv > 400) thrust = 42;
-            else if(a > 60 && cv < 400) thrust = 62;
-            else if(cv < 350) thrust = 72;
-            else if(cv > 350) thrust = 27;
-            else            thrust = 42;   
-	
-		}
+        { 	adj_turn_speed(); }
  		else if(cp.approach_close(current))
 		{ 	approach(); }
         else if(boost && cp.strait() && cp.dist>3400)
