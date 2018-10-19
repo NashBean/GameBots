@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 8;
+const int STRIKE_BACK_MINOR_VERSION = 9;
 
 struct Position 
 {
@@ -81,7 +81,7 @@ struct checkPoint
         if(aride.distance(loca) < 20) return true;//300
         else return false;
     };
-    bool aproch_close(Position& aride)
+    bool approach_close(Position& aride)
     {
         if(aride.distance(loca) < 30) return true;//320
         else return false;
@@ -89,7 +89,7 @@ struct checkPoint
 
     bool turning()
     {
-        if(abs(angl)< 15) return false;// was 74 was last 45 working
+        if(abs(angl)< 3) return false;// was 74 was last 45 working
         else return true;
     };
     bool strait()
@@ -108,15 +108,23 @@ struct ride
     int x,y,thrust;
     int reset_thrust=0;
     bool boost=true;
-    int aproch_cv = 300;//250 450
+    int approach_cv = 300;//250 450
     int break_cv = 100;
     int close_cv = 150;
     int simi_close_cv = 200;// was 200 & 400
-    int u_turn_cv = 100;
-    int turn_around_cv = 200;
-    int drift_cv = 550;
-    int stear_cv = 750;
-    int fly_cv = 1000;
+    int u_turn1_cv = 50;
+    int u_turn2_cv = 100;
+    int u_turn3_cv = 150;
+    int turn_around1_cv = 250;
+    int turn_around2_cv = 350;
+    int turn_around3_cv = 550;
+    int drift1_cv = 600;
+    int drift2_cv = 650;
+    int drift3_cv = 700;
+    int stear1_cv = 750;
+    int stear2_cv = 800;
+    int stear3_cv = 850;
+    int fly_cv = 999;
     
     vector<checkPoint> cp_lst;
     
@@ -187,33 +195,8 @@ struct ride
                 if(cv < close_cv) bump_up_thrust();
                 else if(cv > close_cv) bump_down_thrust();
             }
-            
-   /*         
-            if(cp.dist < 20 && cv>400)  {reverse_thrust(); }
-            else if(cp.dist < 20 && cv<400) 
-            {
-                if(cv<100 && cp.angl<5)  thrust = 70;
-                else if(cv<200 && cp.angl<14)  thrust = 40;
-                else if(cv<300 && cp.angl>30)  thrust = 20;
-                else thrust = 30;// maby 40
-            }
-            else if(cp.dist < 14 && (cv>400)) 
-            {reverse_thrust();}
-            else if(cp.dist < 50 && (cv<200)) 
-            {
-                 thrust = 32;
-            }
-            else if(cp.dist < 50 && cv>550) reverse_thrust();//was 20
-            else if(cp.dist < 100 && cv<450) bump_up_thrust();//thrust = 42;//was 42
-            else if(cp.dist < 100 && cv>600) reverse_thrust() ;// last 2 was 725 42  - 400 2
-            //else if(cv>725) thrust = 2;// was 725 42  - 400 2
-            //else if(cv>675) thrust = 22;//was 675  - 350 22
-            else thrust = 20;// was 42
-            //*/
         }
-       // else if(cp.simi_close(current)&& cv<simi_close_cv  )//200)        { bump_up_thrust//thrust = 22;         cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
-       // else if(cp.simi_close(current)&& cv>simi_close_cv)//400) bump_down_thrust()//thrust = 12;       cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;}
-      //*/  
+ 
         else if(cp.simi_close(current))
         { 
             if(cv<simi_close_cv) bump_up_thrust();
@@ -221,52 +204,49 @@ struct ride
             cerr<<"cv:"<<std::to_string(cv)<<" turning simi_close"<<endl;
         }
         
- 		else if(cp.aproch_close(current))
-		{
-            if(cv<aproch_cv) bump_up_thrust();
-            else if(cv>aproch_cv) bump_down_thrust();
-           // if(cv > 750) thrust = 70; else if(cv > 350) thrust = 80; else  thrust = 100;   
+ 		else if(cp.approach_close(current))
+		{// approach
+            if(cv<approach_cv) bump_up_thrust();
+            else if(cv>approach_cv) bump_down_thrust();
 		}
 
         else if(cp.turning())
-        { 
+        { // turning
             int a = abs(cp.angl);
-
-           // else if(a>125) thrust=14;
-           // else if(a>110) thrust=24;
-            //else if(a>90) thrust=34;
-            //else if(a>55) thrust=44;
-            //else if(a>45) thrust=47;
-            //else if(a>35)thrust=54;
-           // else if(a>25)thrust=57;
-            //else if(a>15)thrust=64;
-            //else thrust=67;
   
-        if(a>110 && cv < u_turn_cv)bump_up_thrust();
-        else if(a>110 && cv > u_turn_cv) bump_down_thrust();
-        else if(a>50 && cv < turn_around_cv) bump_up_thrust();
-        else if(a>50 && cv > turn_around_cv) bump_down_thrust();
-        else if(a>36  && cv < drift_cv) bump_up_thrust();
-        else if(a>36  && cv > drift_cv) bump_down_thrust();
-        else if(a>2 && cv < stear_cv) bump_up_thrust();
-        else if(a>2 && cv > stear_cv) bump_down_thrust();
-        else if(cv < fly_cv) bump_up_thrust();
-        else if(cv > fly_cv) bump_down_thrust();
+            if(a>170 && cv < u_turn1_cv)bump_up_thrust();
+            else if(a>170 && cv > u_turn1_cv) bump_down_thrust();
+            else if(a>150 && cv < u_turn2_cv)bump_up_thrust();
+            else if(a>150 && cv > u_turn2_cv) bump_down_thrust();
+            else if(a>130 && cv < u_turn3_cv)bump_up_thrust();
+            else if(a>130 && cv > u_turn3_cv) bump_down_thrust();
+            
+            else if(a>90 && cv < turn_around1_cv) bump_up_thrust();
+            else if(a>90 && cv > turn_around1_cv) bump_down_thrust();
+            else if(a>47 && cv < turn_around2_cv) bump_up_thrust();
+            else if(a>47 && cv > turn_around2_cv) bump_down_thrust();
+            else if(a>30 && cv < turn_around3_cv) bump_up_thrust();
+            else if(a>30 && cv > turn_around3_cv) bump_down_thrust();
+    
+            else if(a>23  && cv < drift1_cv) bump_up_thrust();
+            else if(a>23  && cv > drift1_cv) bump_down_thrust();
+            else if(a>17  && cv < drift2_cv) bump_up_thrust();
+            else if(a>17  && cv > drift2_cv) bump_down_thrust();
+            else if(a>10  && cv < drift3_cv) bump_up_thrust();
+            else if(a>10  && cv > drift3_cv) bump_down_thrust();
+    
+    
+            else if(a>7 && cv < stear1_cv) bump_up_thrust();
+            else if(a>7 && cv > stear1_cv) bump_down_thrust();
+            else if(a>3 && cv < stear2_cv) bump_up_thrust();
+            else if(a>3 && cv > stear2_cv) bump_down_thrust();
+            else if(a>1 && cv < stear3_cv) bump_up_thrust();
+            else if(a>1 && cv > stear3_cv) bump_down_thrust();
+    
+            else if(cv < fly_cv) bump_up_thrust();
+            else if(cv > fly_cv) bump_down_thrust();
 
-        //    if(a >110 && cv > 350) thrust = 2;
-        //    else if(a > 110 && cv < 100) thrust = 20;// was 20 then 40
-        //    else if(a > 90 && cv > 350) thrust = 14; //was 350 & 14 added abve line
-        //    else if(a > 90 && cv < 350) thrust = 14;
-        //    else if(a > 60 && cv > 350) thrust = 20;
-        //    else if(a > 60 && cv < 350) thrust = 20;
-        //    else if(a > 45 && cv > 350) thrust = 22;
-        //    else if(a > 45 && cv < 350) thrust = 32;
-        //    else if(a > 15 && cv > 350) thrust = 22;
-        //    else if(a > 15 && cv < 350) thrust = 32;
-        //    else if(cv > 350) thrust = 22;
-        //    else if(cv < 350) thrust = 42;
-        //    else            thrust = 30;   
-         cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl << " turning"<<endl;
+        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl << " turning"<<endl;
         }
         else if(ed < 35)// && cv>200)was 25
         {// bump
