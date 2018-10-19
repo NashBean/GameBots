@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 2;
-const int STRIKE_BACK_MINOR_VERSION = 10;
+const int STRIKE_BACK_MINOR_VERSION = 11;
 
 struct Position 
 {
@@ -116,8 +116,8 @@ struct ride
     int u_turn2_cv = 125;
     int u_turn3_cv = 150;
     int turn_around1_cv = 200;
-    int turn_around2_cv = 250;
-    int turn_around3_cv = 300;
+    int turn_around2_cv = 300;
+    int turn_around3_cv = 400;
     int drift1_cv = 500;
     int drift2_cv = 550;
     int drift3_cv = 600;
@@ -147,14 +147,28 @@ struct ride
     {
         if(thrust<98)  thrust += 2;
         else thrust =100;    
-        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
+   //     cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
     };
 
     void bump_down_thrust()
     {
         if(thrust>0)  thrust -= 1;
         else thrust = 0;    
-        cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
+    //    cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
+    };
+    void bump_up_thrust(int tagetCV)
+    {
+        
+        if(thrust<96)  thrust += 4;
+        else thrust =100;    
+   //     cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
+    };
+
+    void bump_down_thrust()
+    {
+        if(thrust>3)  thrust -= 3;
+        else thrust = 0;    
+    //    cerr<<"cv:"<<cv<<" thrust:"<< thrust<< " angle:" <<cp.angl <<endl;
     };
 
     void reverse_thrust()
@@ -228,8 +242,8 @@ struct ride
             else if(a>75 && cv < turn_around3_cv) bump_up_thrust();
             else if(a>75 && cv > turn_around3_cv) bump_down_thrust();
     
-            else if(a>45  && cv < drift1_cv) bump_up_thrust();
-            else if(a>45  && cv > drift1_cv) bump_down_thrust();
+            else if(a>55  && cv < drift1_cv) bump_up_thrust();
+            else if(a>55  && cv > drift1_cv) bump_down_thrust();
             else if(a>30  && cv < drift2_cv) bump_up_thrust();
             else if(a>30  && cv > drift2_cv) bump_down_thrust();
             else if(a>20  && cv < drift3_cv) bump_up_thrust();
