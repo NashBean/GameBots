@@ -7,7 +7,7 @@ using namespace std;
 
 //-------------------------------------------------------------------
 const int STRIKE_BACK_MAJOR_VERSION = 3;
-const int STRIKE_BACK_MINOR_VERSION = 8;//b 
+const int STRIKE_BACK_MINOR_VERSION = 9;
 
 struct Position 
 {
@@ -48,6 +48,545 @@ struct Position
     {
         return find_distance(a.x,a.y);
     };
+    
+	bool is_neighbour(int px, int py) 
+	{
+    	if (px == x  &&  py == y)
+        	return false;
+    	else if (abs(px-x) <= 1 && abs(py-y) <= 1)
+        	return true;
+    	return false;
+	};
+};
+//-------------------------------------------------------------------
+struct turnData
+{
+    int brake_speed = 110;//90 /250;
+    int brake_distance = 150;//50;
+    int brake_thrust = 7;
+    int close_speed = 150;//210  250;
+    int close_distance = 300;//200;
+    int close_thrust = 14;
+    int approach_speed = 250;//300;//300;//250 450
+    int approach_distance = 600;//450;//300;//250 450
+    int approach_thrust = 27;
+    int distance_adjustment = 25;
+    int speed_adjustment = 20;
+
+    int turn_around_speed = 107;//145;
+    int turn_around_angle = 170;//
+    int turn_around_thrust = 7;
+    int u_turn_speed = 155;// +/- 25  //175; 
+    int u_turn_angle = 140;// +/- 20    //110;
+    int u_turn_thrust = 14;
+    int drift_speed = 175;// +/- 100    //200;
+    int drift_angle = 85;// +/- 15  //50;
+    int drift_thrust = 24;
+    int hard_turn_speed = 210;// +/- 50  //225;
+    int hard_turn_angle = 45;//40;
+    int hard_turn_thrust = 42;
+    int light_turn_speed = 450;//550;
+    int light_turn_angle = 35;//7;
+    int light_turn_thrust = 74;
+    int top_speed = 857;//777;
+    
+    int angle=0;
+    int skid=0;
+    bool saveToFile()
+    {
+    };
+};
+
+void Display_Turn_Data(turnData& td)
+{
+	cerr<<"Brake speed-distance="<<td.brake_speed<<"-"<< td.brake_distance <<endl;
+	cerr<<"Close speed-distance="<<td.close_speed<<"-"<< td.close_distance <<endl;
+	cerr<<"Adjst speed-distance="<<td.speed_adjustment<<"-"<< td.distance_adjustment <<endl;
+	cerr<<"----------------------------------------------------"<<endl;
+	cerr<<"turn_around speed-angle-thrust "<<td.turn_around_speed<<"-"<< td.turn_around_angle <<"-"<< td.turn_around_thrust<<endl;
+	cerr<<"u_turn speed-angle-thrust      "<<td.u_turn_speed<<"-"<< td.u_turn_angle<<"-"<< td.u_turn_thrust <<endl;
+	cerr<<"drift speed-angle-thrust       "<<td.drift_speed<<"-"<< td.drift_angle<<"-"<< td.drift_thrust <<endl;
+	cerr<<"hard_turn speed-angle-thrust   "<<td.hard_turn_speed<<"-"<< td.hard_turn_angle<<"-"<< td.hard_turn_thrust <<endl;
+	cerr<<"light_turn speed-angle-thrust  "<<td.light_turn_speed<<"-"<< td.light_turn_angle<<"-"<< td.light_turn_thrust <<endl;
+	cerr<<"----------------------------------------------------"<<endl;
+};
+
+struct checkPoint
+{
+    turnData tData;    
+    Position loca;//location
+    int dist, angl;
+ 
+    bool operator ==(checkPoint& other)
+    {
+        if(loca == other.loca)   return true;
+        return false;
+    };
+   
+    void update(checkPoint& other)
+    {
+        dist = other.dist; 
+        angl = other.angl;
+    };
+
+    void set(int px, int py,int di,int ai)
+    {loca.set(px,py); dist = di; angl=ai;};
+    
+    void set(checkPoint &cp )
+    {loca.set(cp.loca); dist = cp.dist; angl=cp.angl;};
+    
+
+    bool close(Position& aride)
+    {
+        if(aride.distance(loca) < tData.close_distance) return true;//was 200 , 150 works better
+        else return false;
+    };
+    bool approach_close(Position& aride)
+    {
+        if(aride.distance(loca) < tData.approach_distance) return true;//320 then 500
+        else return false;
+    };
+
+    bool turning()
+    {
+        if(abs(angl)< 7) return false;//42 was best was 74 was last 45 working
+        else return true;
+    };
+    bool strait()
+    {
+        if(angl< 7) return true;
+        else return false;
+    };
+    void display()
+    {       
+	cerr<<"turning angle:"<<angl<<" distance:"<< dist <<" skid:"<< tData.skid <<endl;
+	Display_Turn_Data(tData);
+    };
+};
+//-------------------------------------------------------------------
+
+struct cockpit
+{
+    turnData defaltTurnData;
+    int lap=0;
+    int lap_time=0;
+    int last_lap_time=0;
+    int cv = -1;
+    int ed = -1;//TODO init opp.distance(current);
+
+    int next_index = -1;
+    int last_index = -1;
+    int track_index = 0;
+    vector<checkPoint> track;
+    
+    void addCheckPoint(checkPoint& cp){track.push_back(cp);};//todo track.init();
+    
+    void updateCheckPoint(checkPoint& cp)//, int index)
+    {
+        for(size_t c=0; c<track.size(); c++)
+        { 
+            if(cp == track[c]) 
+            {
+                track[c].update(cp);   
+                c=track.size();  
+            } 
+        }
+    };
+    
+    void logCheckPoint(checkPoint& cp )
+    {
+        lap_time++;
+        if(!lap)
+        {
+            if(!track.size()) 
+            { addCheckPoint(cp); last_index=0;}//start point
+            else if(next_index == -1)
+            {addCheckPoint(cp); next_index=1;}//first check point
+            else if(cp == track[0]  && next_index!=0)
+            {
+                int temp_time=last_lap_time;
+                last_lap_time = lap_time;
+                lap++;
+                lap_time=0;
+                track[0].update(cp);
+                next_index=1;
+                last_index=0;
+               // cerr << "Lap:"<<lap<<"  Lap Time="<<last_lap_time<<endl;
+            }
+            else if(cp == track[0])
+            {
+                track[0].update(cp);
+            }
+            else if(cp == track[next_index])
+            {
+                track[next_index].update(cp);
+            }
+            else //if(cp != track[nextCPindex])
+            {
+                last_index=next_index;
+                next_index++;
+                addCheckPoint(cp);
+            }
+        }
+        else if(lap)
+        {
+            if(cp == track[0] && next_index!=0)
+            {
+                int temp_time=last_lap_time;
+                last_lap_time = lap_time;
+                lap++;
+                lap_time=0;
+                track[0].update(cp);
+                next_index=1;
+                last_index=0;
+            }
+            else if(cp == track[0])
+            {
+                track[0].update(cp);
+            }
+            else if(next_index!=next_index)
+            {
+                last_index=next_index;
+                next_index++;
+                track[next_index].update(cp);
+            }
+            else 
+            {
+                track[next_index].update(cp);
+            }
+        }
+       else
+        {
+    	//cerr<<"error: case not expected in cockpit.logCheckPoint(&cp) :"<<endl;
+    	track[next_index].display();
+        }
+     };
+    
+    void bump_back_approach()
+    {
+        checkPoint& cp = track[last_index];
+
+        if(cp.tData.approach_distance>=cp.tData.distance_adjustment)
+        { cp.tData.approach_distance -=  cp.tData.distance_adjustment;}
+        else
+        { cp.tData.approach_distance = 0;}
+        
+        if(cp.tData.approach_speed > cp.tData.speed_adjustment)
+        { cp.tData.approach_speed -=  cp.tData.speed_adjustment;}
+        else
+        { cp.tData.approach_speed = 0;}
+    };
+
+    void bump_up_approach()
+    {
+        checkPoint& cp = track[last_index];
+        cp.tData.approach_distance +=  cp.tData.distance_adjustment;
+        cp.tData.approach_speed +=  cp.tData.speed_adjustment;
+    };
+    
+    void display()
+    {
+    //checkPoint& cp = track[next_index];
+	//cerr<<"turning angle:"<<cp.angl<<" skid:"<< cp.tData.skid <<endl;
+    };
+
+    
+    int tapBrake()
+	{//brake
+    checkPoint& cp = track[next_index];
+    turnData& td = cp.tData;
+    //int td.distance_adjustment;
+    //int td.speed_adjustment;
+		
+		if(cp.dist>5 && cp.dist < td.brake_distance ) 
+		{
+		    if(cv>100) return -2;// {a_ride.reverse_thrust(100); }
+		    else return 0;//{a_ride.reverse_thrust(cv);}
+		}
+		else if(cp.dist < td.close_distance) 
+		{
+		    if(cv<td.close_speed) return 1;// a_ride.bump_up_thrust; 
+		    else if(cv>(td.close_speed-150)) return -2;// a_ride.bump_up_thrust; 
+		    else if(cv>td.close_speed) return -1;//a_ride.bump_down_thrust;
+		    else return 0;//a_ride.wait();
+		} 
+		else if(cp.dist < td.approach_distance) 
+		{
+		    if(cv<td.approach_speed) return 1;//a_ride.bump_up_thrust; 
+		    else if(cv>td.approach_speed) return -1;//a_ride.bump_down_thrust;
+		    else return 0;//a_ride.wait();
+		}
+		else {return 0;}//thrust = 0;
+	};
+    
+	int  adjThrust()
+	{
+        int result =97;
+
+        cerr << "----------- adj Thrust -----------------"<< endl;
+
+        if(last_index<0 || next_index<0) return 0;
+
+        checkPoint& cp = track[last_index];
+        turnData& td = cp.tData;
+		int a = abs(cp.angl);		// take out abs to figure out what direction
+    	
+    	Display_Turn_Data(track[last_index].tData);
+    	Display_Turn_Data(track[next_index].tData);
+		
+
+		if(a>td.turn_around_angle && cv < td.turn_around_speed) {result = td.u_turn_thrust;}
+		else if(a>td.turn_around_angle && cv > td.turn_around_speed) {result=td.turn_around_thrust;}
+		else if(a>td.u_turn_angle && cv < td.u_turn_speed) {result = td.drift_thrust;}
+		else if(a>td.u_turn_angle && cv > td.u_turn_speed) {result = td.u_turn_thrust;}
+		else if(a>td.drift_angle  && cv < td.drift_speed) {result = td.hard_turn_thrust;}
+		else if(a>td.drift_angle  && cv > td.drift_speed) {result = td.drift_thrust;}
+		else if(a>td.hard_turn_angle && cv < td.hard_turn_speed) {result = td.light_turn_thrust;}
+		else if(a>td.hard_turn_angle && cv > td.hard_turn_speed) {result = td.hard_turn_thrust;}
+		// 100 else if(a>td.light_turn_angle && cv < td.light_turn_speed) {return 1;}
+		else if(a>td.light_turn_angle && cv > td.light_turn_speed) {result = td.light_turn_thrust;}
+	    // --------- approch ----------------
+		else if(cp.dist < td.brake_distance ) 
+		{
+		    if(cp.dist>10 && cv>(td.brake_speed+50)){result = -100;}
+		    else if(cv>td.brake_speed) {result = td.brake_thrust;}// {a_ride.reverse_thrust(100); }
+		    else if(cv<td.brake_speed) {result = 7;}// {a_ride.reverse_thrust(100); }
+		    else return 92;//{a_ride.reverse_thrust(cv);}
+		}
+		else if(cp.dist < td.close_distance) 
+		{
+		    if(cv<td.close_speed) {result=97;} 
+		    else if(cv>td.close_speed) {result = td.close_thrust;} 
+		    else { result=42;}
+		} 
+		else if(cp.dist < td.approach_distance) 
+		{
+		    if(cv<td.approach_speed) {result=99;} 
+		    else if(cv>td.approach_speed) {result=td.approach_thrust;}
+		    else {result=97;}
+		}
+	    // --------- kick it
+		else if(cv > td.top_speed)  {result = 97;}
+		else {result = 100;}
+
+
+        return result;
+	};
+
+	int adjTurnSpeed()
+	{
+        cerr << "----------- adj Turn Speed -----------------"<< endl;
+
+        if(last_index<0 || next_index<0) return 0;
+
+        checkPoint& cp = track[last_index];
+        turnData& td = cp.tData;
+		int a = abs(cp.angl);
+
+		if(a>td.turn_around_angle && cv < td.turn_around_speed) {return 1;}// {a_ride.bump_up_thrust();}
+		else if(a>td.turn_around_angle && cv > td.turn_around_speed) {return -1;}// {a_ride.bump_down_thrust();}
+		else if(a>td.u_turn_angle && cv < td.u_turn_speed) {return 1;}// { a_ride.bump_up_thrust();}
+		else if(a>td.u_turn_angle && cv > td.u_turn_speed) {return -1;}// { a_ride.bump_down_thrust();}
+		else if(a>td.drift_angle  && cv < td.drift_speed) {return 1;}// { a_ride.bump_up_thrust();}
+		else if(a>td.drift_angle  && cv > td.drift_speed) {return -1;}// { a_ride.bump_down_thrust();}
+		else if(a>td.hard_turn_angle && cv < td.hard_turn_speed) {return 1;}// { a_ride.bump_up_thrust();}
+		else if(a>td.hard_turn_angle && cv > td.hard_turn_speed) {return -1;}// { a_ride.bump_down_thrust();}
+		else if(a>td.light_turn_angle && cv < td.light_turn_speed) {return 1;}// { a_ride.bump_up_thrust();}
+		else if(a>td.light_turn_angle && cv > td.light_turn_speed) {return -1;}// { a_ride.bump_down_thrust();}
+		else if(cv < td.top_speed) {return 2;}// {a_ride.bump_up_thrust();}
+		else if(cv > td.top_speed)  {return -1;}//{a_ride.bump_down_thrust();}
+	    else {return 0;}// {a_ride.wait();}
+//	td.diplay();
+	};
+};
+
+
+struct Ride
+{
+    Position current, next, last, opp, oppLast;
+    checkPoint cp, cpLast;
+    int cv, ed; // costant valosaty, enamy distance
+    int x,y,thrust;
+    int bump_distance = 45;//50 is good  was 30
+    int reset_thrust=0;
+    bool boost=true;
+    
+    cockpit pit; 
+    turnData& tD=pit.defaltTurnData;
+    void loopData(int ix, int iy, int cpx, int cpy, int cpd, int cpa, int oppx, int oppy)
+    {
+        last.set(current);
+        current.set(ix,iy);
+        cpLast.set(cp);
+        cp.set(cpx,cpy,cpd,cpa);
+        oppLast.set(opp);
+        opp.set(oppx,oppy);
+        
+        if(reset_thrust) {  thrust=reset_thrust; reset_thrust=0;}
+    };
+
+    // TODO bool isSkidding() {    };
+    
+    void reverse_thrust()
+    {
+        reset_thrust = thrust;
+        thrust = 100;
+        x=last.x; y=last.y;
+    };
+    
+    void reverse_thrust(int thr)
+    {
+        reset_thrust = thrust;
+        x=last.x; y=last.y;
+        thrust = thr;
+    };
+
+    void bump_opp()
+    {
+        reset_thrust = thrust;
+		x=opp.x; y=opp.y;
+    	 thrust = 100;
+	};
+    
+    void bump_up_thrust()
+    {
+        if(thrust<95)  {thrust += 5;}
+        else {thrust =100; }   
+    };
+
+    void bump_down_thrust()
+    {
+        if(thrust>5)  {thrust -= 5;}
+        else {thrust = 0;}    
+    };
+
+    void bump_thrust(int targetCV)
+    {    
+        if(cv > (targetCV+150)) {reverse_thrust();}
+        else if (cv > (targetCV)) {bump_down_thrust();}
+        else {bump_up_thrust();}
+    };
+
+    void tapBrake()
+    {
+	  int adjspeed = pit.tapBrake();
+	  if(adjspeed == 1 ) {bump_up_thrust();}
+	  else if(adjspeed > 1 ) 
+	  { for(size_t b=0; b<adjspeed; b++)
+	            {bump_up_thrust();     }
+	  }
+	  else if(adjspeed == -1) {bump_down_thrust();}
+	  else if(adjspeed < -1)
+	  { reverse_thrust();  }
+	  else {bump_down_thrust();}
+    };
+
+	void adj_turn_speed()
+	{
+	  //*/  
+	  int adjspeed = pit.adjTurnSpeed();
+	  if(adjspeed == 1 ) {bump_up_thrust();}
+	  else if(adjspeed > 1 ) 
+	  { thrust=100; }
+	  else if(adjspeed == -1) {bump_down_thrust();}
+	  else if(adjspeed < -1)
+	  { reverse_thrust();  }
+	  else {bump_down_thrust();}
+	};
+
+    string getResult()
+    {
+        string result="";
+        cv = last.distance(current);
+        ed = opp.distance(current);
+        x=cp.loca.x; y=cp.loca.y;
+        
+        if(ed < bump_distance)
+        { 	bump_opp(); }
+        else if(cp.close(current))
+        {
+            tapBrake();
+        //    int appBrake = pit.tapBrake();
+        //    if(appBrake>0){bump_up_thrust();}
+        //    else if(appBrake==-1){bump_down_thrust();}
+        //    else if(appBrake<-1) {reverse_thrust();}
+        //    else {bump_down_thrust();}
+        }
+        else if(cp.turning())// turning
+        { 	adj_turn_speed(); }
+        else if(boost && cp.angl<1 && cp.dist>4000)
+        {	reset_thrust=thrust; thrust=1000; boost=false;  }
+        else { thrust = 100;}
+        
+        if(thrust>100)
+        {   result = std::to_string(x) +" "+ std::to_string(y) +" "+ "BOOST";}
+        else
+        {   result = std::to_string(x) +" "+ std::to_string(y) +" "+ std::to_string(thrust);}
+
+        
+        cerr<<" output x="<< x <<" output y="<< y <<endl;
+        cerr<<" output="<< result <<endl;
+
+        return result; 
+    };
+
+    string getThrustResult()
+    {
+        string result="";
+        cv = last.distance(current);
+        ed = opp.distance(current);
+        x=cp.loca.x; y=cp.loca.y;
+        
+        if(ed < bump_distance)
+        { 	bump_opp(); }
+        else if(boost && cp.angl<1 && cp.dist>4000)
+        {	reset_thrust=thrust; thrust=1000; boost=false;  }
+        thrust = pit.adjThrust();
+        if(!thrust){thrust=100;}
+        
+        if(thrust>100 && boost)
+        {   result = std::to_string(x) +" "+ std::to_string(y) +" "+ "BOOST";}
+        else
+        {   result = std::to_string(x) +" "+ std::to_string(y) +" "+ std::to_string(thrust);}
+
+        
+        cerr<<" output x="<< x <<" output y="<< y <<endl;
+        cerr<<" output="<< result <<endl;
+
+        return result; 
+    };
+
+};
+//-------------------------------------------------------------------
+
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+int main()
+{
+    Ride myRide;//My Ride
+    // game loop
+    while (1) 
+    {
+        int x;
+        int y;
+        int nextCheckpointX; // x position of the next check point
+        int nextCheckpointY; // y position of the next check point
+        int nextCheckpointDist; // distance to the next checkpoint
+        int nextCheckpointAngle; // angle between your pod orientation and the direction of the next checkpoint
+        cin >> x >> y >> nextCheckpointX >> nextCheckpointY >> nextCheckpointDist >> nextCheckpointAngle; cin.ignore();
+        int opponentX;
+        int opponentY;
+        cin >> opponentX >> opponentY; cin.ignore();
+
+        myRide.loopData(x,y,nextCheckpointX,nextCheckpointY,nextCheckpointDist,nextCheckpointAngle,opponentX,opponentY);
+        cout << myRide.getThrustResult() << endl;       
+    };
+}
+//-------------------------------------------------------------------
+
+
     
 	bool is_neighbour(int px, int py) 
 	{
