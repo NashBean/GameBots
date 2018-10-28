@@ -24,7 +24,7 @@ namespace iBS
 //#define int_t longlong
 
 struct Matrix 
-{
+{  //  Must have a space between > > below, or will not work
     std::vector<std::vector<int_t> > a; 
     
     Matrix& operator =(Matrix& o)
