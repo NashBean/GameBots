@@ -1,8 +1,8 @@
 //
 //  iBS_Matrix.h
+//  https://github.com/NashBean/GameBots/Matrix/iBS_Matrix.h 
 //
-//
-//  Created by nash on 11/29/15.
+//  Created by Nash Bean on 11/29/15.
 //  Copyright 2015 iBean Software.
 //  All rights reserved.
 //
@@ -11,22 +11,28 @@
 #define iBS_Matrix_h
 
 const int Matrix_MAJOR_VERSION = 1;
-const int Matrix_MINOR_VERSION = 0;
+const int Matrix_MINOR_VERSION = 1;
 
 #include <iostream>
 #include <vector>
 namespace iBS
 {
+// move rem to switch 32 bit int - 64 bit int ...
+#define int_t int 
+//#define int_t uint32_t 
+//#define int_t uint64_t
+//#define int_t longlong
+
 struct Matrix 
 {
-    std::vector<std::vector<int> > a; 
+    std::vector<std::vector<int_t> > a; 
     
     Matrix& operator =(Matrix& o)
     {
         a.resize(o.a.size());
-        for(int i=0;i<a.size();i++)
+        for(size_t i=0;i<a.size();i++)
             a[i].resize(o.a[i].size());
-        for(int i=0;i<a.size();i++) 
+        for(size_t i=0;i<a.size();i++) 
             for(int j=0;j<a[i].size();j++) 
             {
                 a[i][j] = o.a[i][j];
@@ -36,8 +42,8 @@ struct Matrix
     
     Matrix& operator +(Matrix& o)
     {
-        for(int i=0;i<a.size();i++) 
-            for(int j=0;j<a[i].size();j++) 
+        for(size_t i=0;i<a.size();i++) 
+            for(size_t j=0;j<a[i].size();j++) 
             {
                 a[i][j] = a[i][j] + o.a[i][j];
             }
@@ -45,8 +51,8 @@ struct Matrix
     }
     Matrix& operator -(Matrix& o)
     {
-        for(int i=0;i<a.size();i++) 
-            for(int j=0;j<a[i].size();j++) 
+        for(size_t i=0;i<a.size();i++) 
+            for(size_t j=0;j<a[i].size();j++) 
             {
                 a[i][j] = a[i][j] - o.a[i][j];
             }
@@ -58,14 +64,14 @@ struct Matrix
         
         Matrix tm;
         tm.a.resize(a.size());
-        for(int i=0;i<tm.a.size();i++)
+        for(size_t i=0;i<tm.a.size();i++)
             tm.a[i].resize(o.a[0].size());
         
-        for(int i=0;i<tm.a.size();i++) 
-            for(int j=0;j<tm.a[i].size();j++) 
+        for(size_t i=0;i<tm.a.size();i++) 
+            for(size_t j=0;j<tm.a[i].size();j++) 
             {
                 tm.a[i][j] = 0;
-                for (int c=0; c<a[i].size(); c++) 
+                for (size_t c=0; c<a[i].size(); c++) 
                 {
                     tm.a[i][j] += a[i][c] * o.a[c][j];
                 }
@@ -74,13 +80,13 @@ struct Matrix
         *this = tm;
         return *this;
     }
-    Matrix& operator ^(int power)
+    Matrix& operator ^(int power)// more then 32 bit int may be to much
     {
         Matrix  tM2;
         tM2 = *this;
 
     //   not <= below \/ because first time counts as 2
-        for(int i=1; i<power; ++i)
+        for(size_t i=1; i<power; ++i)
             *this = (*this) * (tM2);
         
         return *this;
@@ -88,9 +94,9 @@ struct Matrix
     
     void print()
     {
-        for(int i=0;i<a.size();i++) 
+        for(size_t i=0;i<a.size();i++) 
         {
-            for(int j=0;j<a[i].size();j++) 
+            for(size_t j=0;j<a[i].size();j++) 
             {
                 std::cout << a[i][j] << ' ';
             }
@@ -98,7 +104,7 @@ struct Matrix
         }
         std::cout << std::endl;
     }
-};
+}; // ens of Matrix struct
 
 }; // end of namespace iBS
 
