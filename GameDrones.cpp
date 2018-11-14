@@ -9,7 +9,7 @@ using namespace std;
 // Coded by: NashBean 2018
 // https//iBeanSoftware.github.io/index.html
 const int GAME_DRONES_MAJOR_VERSION = 0;
-const int GAME_DRONES_MINOR_VERSION = 2;
+const int GAME_DRONES_MINOR_VERSION = 3;
 
 struct Position 
 {
