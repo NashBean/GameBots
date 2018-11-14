@@ -5,6 +5,11 @@
 
 using namespace std;
 
+// Coded by: NashBean 2018
+// https//iBeanSoftware.github.io/index.html
+const int MARS_LANDER_MAJOR_VERSION = 0;
+const int MARS_LANDER_MINOR_VERSION = 3;
+
 /**
  * Save the Planet.
  * Use less Fossil Fuel.
