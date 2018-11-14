@@ -21,3 +21,8 @@ https://www.hackerearth.com/problem/multiplayer/gomoku/
 
 Game Bot Chat Room Link:
 https://ibeansoftware.hipchat.com/chat/room/2175280
+
+Others include:
+https://www.codingame.com/ide/puzzle/game-of-drones
+https://www.codingame.com/ide/puzzle/coders-of-the-caribbean
+https://www.codingame.com/ide/puzzle/coders-strike-back
