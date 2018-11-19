@@ -33,3 +33,5 @@ https://www.codingame.com/ide/puzzle/coders-strike-back
 https://www.codingame.com/multiplayer/bot-programming/tic-tac-toe
 
 https://www.codingame.com/ide/puzzle/platinum-rift-episode-1
+
+https://www.codingame.com/ide/puzzle/platinum-rift-episode-2
