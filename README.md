@@ -30,3 +30,4 @@ https://www.codingame.com/ide/puzzle/coders-of-the-caribbean
 
 https://www.codingame.com/ide/puzzle/coders-strike-back
 
+https://www.codingame.com/multiplayer/bot-programming/tic-tac-toe
